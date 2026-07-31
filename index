@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le QG des Daronnes</title>
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #2f3542;
+            --primary: #ff6b81;
+            --border: #dfe4ea;
+            --shadow: rgba(0,0,0,0.05);
+        }
+        [data-theme="dark"] {
+            --bg: #1e1e24;
+            --card-bg: #2d2d38;
+            --text: #f1f2f6;
+            --primary: #ff4757;
+            --border: #3f3f4e;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Écran de Connexion */
+        #login-screen {
+            max-width: 400px;
+            margin: 40px auto;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .avatar-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .avatar-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Application principale */
+        #app-screen {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        .top-actions {
+            display: flex;
+            gap: 8px;
+        }
+        button {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Filtres et Vues */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        /* Cartes de soirées */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .date-header {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .status-global {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: #eccc68;
+            color: #2f3542;
+            font-weight: bold;
+        }
+
+        /* Boutons ronds des participantes */
+        .participants-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+        }
+        .participant-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75srem;
+        }
+        .round-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-top: 4px;
+            transition: transform 0.1s;
+        }
+        .round-btn:active {
+            transform: scale(0.9);
+        }
+        /* Couleurs des états */
+        .state-dispo { background: #2ed573; color: white; }
+        .state-indispo { background: #ff4757; color: white; }
+        .state-bebe { background: #ffa502; color: white; }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="login-screen">
+        <h2>🏠 Le QG des Daronnes</h2>
+        <p>Qui se connecte ce soir ?</p>
+        <div class="avatar-grid">
+            <div class="avatar-card" onclick="login('Anaïs')">👩 Anaïs</div>
+            <div class="avatar-card" onclick="login('Anne-Sophie')">👩 Anne-Sophie</div>
+            <div class="avatar-card" onclick="login('Céline')">👩 Céline</div>
+            <div class="avatar-card" onclick="login('Sonia')">👩 Sonia</div>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <header>
+            <h1 id="welcome-title">🍷 Le QG des Daronnes</h1>
+            <div class="top-actions">
+                <button onclick="toggleTheme()" title="Mode Sombre">🌙</button>
+                <button onclick="logout()" title="Changer de profil">🚪</button>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button onclick="switchView('list')">📋 Vue Liste</button>
+            <button onclick="switchView('calendar')">📅 Vue Calendrier Mensuel</button>
+        </div>
+
+        <div id="content-container">
+            </div>
+    </div>
+
+    <script>
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRiOoyEA46xpeZ9xwlTLiK7SYF8Lpj11-HUGFFHwi7mW9YH8eIqjDmGgyVqmEqz2JIXnYlLnGG6uMxe/pub?gid=0&single=true&output=csv";
+        let currentUser = "";
+        let currentView = "list";
+        let planningData = [];
+
+        function login(user) {
+            currentUser = user;
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-screen").style.display = "block";
+            document.getElementById("welcome-title").innerText = `🍷 QG - Connectée : ${user}`;
+            loadPlanning();
+        }
+
+        function logout() {
+            currentUser = "";
+            document.getElementById("app-screen").style.display = "none";
+            document.getElementById("login-screen").style.display = "block";
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            if (body.getAttribute("data-theme") === "light") {
+                body.setAttribute("data-theme", "dark");
+            } else {
+                body.setAttribute("data-theme", "light");
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            renderPlanning();
+        }
+
+        async function loadPlanning() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                const data = await response.text();
+                const rows = data.split("\n").map(row => row.split(","));
+                
+                planningData = [];
+                // On saute l'en-tête (i = 1)
+                for (let i = 1; i < rows.length; i++) {
+                    const cols = rows[i];
+                    if (cols.length < 7 || !cols[0]) continue;
+
+                    planningData.push({
+                        date: cols[0].replace(/"/g, ''),
+                        jour: cols[1].replace(/"/g, ''),
+                        anais: cols[2].replace(/"/g, '').trim(),
+                        anneSophie: cols[3].replace(/"/g, '').trim(),
+                        celine: cols[4].replace(/"/g, '').trim(),
+                        sonia: cols[5].replace(/"/g, '').trim(),
+                        analyse: cols[6].replace(/"/g, '').trim()
+                    });
+                }
+                renderPlanning();
+            } catch (error) {
+                document.getElementById("content-container").innerHTML = "<p style='text-align:center; color:red;'>Erreur de chargement du planning.</p>";
+            }
+        }
+
+        function renderPlanning() {
+            const container = document.getElementById("content-container");
+            container.innerHTML = "";
+
+            if (currentView === "list") {
+                planningData.forEach((item, index) => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <div class="date-header">
+                            <span>🌙 Soirée du ${item.jour} ${item.date}</span>
+                            <span class="status-global">${item.analyse}</span>
+                        </div>
+                        <div class="participants-row">
+                            <div class="participant-badge"><span>Anaïs</span><button class="round-btn ${getStateClass(item.anais)}" onclick="changeStatus(${index}, 'Anaïs')">${getShortState(item.anais)}</button></div>
+                            <div class="participant-badge"><span>Anne-So</span><button class="round-btn ${getStateClass(item.anneSophie)}" onclick="changeStatus(${index}, 'Anne-Sophie')">${getShortState(item.anneSophie)}</button></div>
+                            <div class="participant-badge"><span>Céline</span><button class="round-btn ${getStateClass(item.celine)}" onclick="changeStatus(${index}, 'Céline')">${getShortState(item.celine)}</button></div>
+                            <div class="participant-badge"><span>Sonia</span><button class="round-btn ${getStateClass(item.sonia)}" onclick="changeStatus(${index}, 'Sonia')">${getShortState(item.sonia)}</button></div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else {
+                // Vue Calendrier Simplifiée
+                let calHTML = "<div class='card'><h3>📅 Vue Calendrier Mensuel</h3><p>Prochaines soirées programmées :</p><ul>";
+                planningData.forEach(item => {
+                    calHTML += `<li><b>${item.jour} ${item.date}</b> : ${item.analyse}</li>`;
+                });
+                calHTML += "</ul></div>";
+                container.innerHTML = calHTML;
+            }
+        }
+
+        function getStateClass(state) {
+            if (state.includes("Dispo") && state.includes("👶")) return "state-bebe";
+            if (state.includes("Dispo")) return "state-dispo";
+            return "state-indispo";
+        }
+
+        function getShortState(state) {
+            if (state.includes("Dispo") && state.includes("👶")) return "👶";
+            if (state.includes("Dispo")) return "✓";
+            return "✕";
+        }
+
+        function changeStatus(index, person) {
+            // Permet de simuler le basculement localement (peut être relié à l'écriture Google Sheets par la suite)
+            alert(`Mise du statut pour ${person} à la date du ${planningData[index].date} (Interactivité locale activée)`);
+        }
+    </script>
+</body>
+</html>
