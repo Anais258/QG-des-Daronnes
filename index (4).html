@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le QG des Daronnes</title>
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #2f3542;
+            --primary: #ff6b81;
+            --border: #dfe4ea;
+            --shadow: rgba(0,0,0,0.05);
+        }
+        [data-theme="dark"] {
+            --bg: #1e1e24;
+            --card-bg: #2d2d38;
+            --text: #f1f2f6;
+            --primary: #ff4757;
+            --border: #3f3f4e;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Écran de Connexion */
+        #login-screen {
+            max-width: 400px;
+            margin: 40px auto;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .avatar-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .avatar-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .avatar-card:hover .avatar-icon {
+            animation: avatar-bob 0.6s ease-in-out infinite;
+        }
+
+        /* Icône avatar animée (visage qui cligne des yeux + flotte) */
+        .avatar-icon {
+            width: 48px;
+            height: 48px;
+            animation: avatar-float 3s ease-in-out infinite;
+        }
+        .avatar-icon .eye {
+            animation: avatar-blink 4s ease-in-out infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        @keyframes avatar-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        @keyframes avatar-bob {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(-3deg); }
+        }
+        @keyframes avatar-blink {
+            0%, 88%, 100% { transform: scaleY(1); }
+            92% { transform: scaleY(0.1); }
+        }
+
+        /* Icône soleil/lune animée pour le bouton thème */
+        .theme-icon {
+            position: relative;
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .theme-icon svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transition: opacity 0.4s ease, transform 0.5s ease;
+        }
+        .icon-sun {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+            animation: sun-pulse 3s ease-in-out infinite;
+        }
+        .icon-moon {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.6);
+        }
+        [data-theme="dark"] .icon-sun {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.6);
+            animation: none;
+        }
+        [data-theme="dark"] .icon-moon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+            animation: moon-twinkle 2.5s ease-in-out infinite;
+        }
+        @keyframes sun-pulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.25); }
+        }
+        @keyframes moon-twinkle {
+            0%, 100% { filter: drop-shadow(0 0 0px currentColor); }
+            50% { filter: drop-shadow(0 0 3px currentColor); }
+        }
+        #theme-toggle-btn.spin .theme-icon {
+            animation: spin-once 0.5s ease;
+        }
+        @keyframes spin-once {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Application principale */
+        #app-screen {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        .top-actions {
+            display: flex;
+            gap: 8px;
+        }
+        button {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        button.active-view {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Filtres et Vues */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px var(--shadow);
+            gap: 8px;
+        }
+        .controls button { flex: 1; }
+
+        /* Cartes de soirées */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .date-header {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .status-global {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: #eccc68;
+            color: #2f3542;
+            font-weight: bold;
+        }
+
+        /* Boutons ronds des participantes */
+        .participants-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+        }
+        .participant-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+        .round-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-top: 4px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .round-btn:active {
+            transform: scale(0.9);
+        }
+        .round-btn.saving {
+            opacity: 0.5;
+        }
+        /* Couleurs des états */
+        .state-dispo { background: #2ed573; color: white; }
+        .state-indispo { background: #ff4757; color: white; }
+        .state-bebe { background: #ffa502; color: white; }
+
+        /* Calendrier mensuel */
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .calendar-nav span {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--primary);
+            padding-bottom: 4px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            position: relative;
+            cursor: default;
+        }
+        .calendar-day.empty {
+            border: none;
+        }
+        .calendar-day.has-event {
+            cursor: pointer;
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+        .calendar-day.has-event:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .calendar-day .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+        #calendar-day-detail {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="login-screen">
+        <h2>🏠 Le QG des Daronnes</h2>
+        <p>Qui se connecte aujourd'hui ?</p>
+        <div class="avatar-grid" id="avatar-grid"></div>
+    </div>
+
+    <div id="app-screen">
+        <header>
+            <h1 id="welcome-title">🍷 Le QG des Daronnes</h1>
+            <div class="top-actions">
+                <button id="theme-toggle-btn" onclick="toggleTheme()" title="Mode Sombre">
+                    <span class="theme-icon">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="4"/>
+                            <line x1="12" y1="2" x2="12" y2="4"/>
+                            <line x1="12" y1="20" x2="12" y2="22"/>
+                            <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/>
+                            <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/>
+                            <line x1="2" y1="12" x2="4" y2="12"/>
+                            <line x1="20" y1="12" x2="22" y2="12"/>
+                            <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/>
+                            <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/>
+                        </svg>
+                    </span>
+                </button>
+                <button onclick="logout()" title="Changer de profil">🚪</button>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button id="btn-view-list" onclick="switchView('list')">📋 Vue Liste</button>
+            <button id="btn-view-calendar" onclick="switchView('calendar')">📅 Vue Calendrier Mensuel</button>
+        </div>
+
+        <div id="content-container"></div>
+    </div>
+
+    <script>
+        // ==========================================================
+        // CONFIGURATION
+        // ==========================================================
+
+        // URL de lecture (export CSV public du Google Sheet)
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRiOoyEA46xpeZ9xwlTLiK7SYF8Lpj11-HUGFFHwi7mW9YH8eIqjDmGgyVqmEqz2JIXnYlLnGG6uMxe/pub?gid=0&single=true&output=csv";
+
+        // ⚠️ A REMPLACER : URL du déploiement Apps Script (se termine par /exec)
+        // Déploie Code.gs en Application Web puis colle l'URL ici.
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyDlJf7V5k9PG4PX99yWMQtEEQbS52eZDmCLJvYAB9B4m-FvKJcAhW-jdeOeGPCgc/exec";
+
+        // 🔐 Codes PIN par personne — modifie-les ici directement.
+        // (protection simple entre vous, pas une vraie sécurité)
+        const PEOPLE = [
+            { display: "Anaïs",        short: "Anaïs",    key: "anais",       column: "Anais",       pin: "1111", color: "#26de81" },
+            { display: "Anne-Sophie",  short: "Anne-So",  key: "anneSophie",  column: "AnneSophie",  pin: "2222", color: "#a55eea" },
+            { display: "Céline",       short: "Céline",   key: "celine",      column: "Celine",      pin: "3333", color: "#ff6b81" },
+            { display: "Sonia",        short: "Sonia",    key: "sonia",       column: "Sonia",       pin: "4444", color: "#feca57" }
+        ];
+
+        // ==========================================================
+        // ETAT
+        // ==========================================================
+        let currentUser = "";
+        let currentView = "list";
+        let planningData = [];
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth(); // 0-11
+
+        // ==========================================================
+        // LOGIN / LOGOUT
+        // ==========================================================
+        function buildLoginScreen() {
+            const grid = document.getElementById("avatar-grid");
+            grid.innerHTML = "";
+            PEOPLE.forEach(p => {
+                const div = document.createElement("div");
+                div.className = "avatar-card";
+                div.innerHTML = `
+                    <svg class="avatar-icon" viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="20" fill="none" stroke="var(--text)" stroke-width="3"/>
+                        <path class="eye" d="M14 20 Q17.5 15.5 21 20" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+                        <path class="eye" d="M27 20 Q30.5 15.5 34 20" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="14.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="3"/>
+                        <circle cx="33.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="3"/>
+                        <path d="M14.5 30 Q24 38 33.5 30" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>${p.display}</span>
+                `;
+                div.onclick = () => attemptLogin(p);
+                grid.appendChild(div);
+
+                // Décalage aléatoire pour que les avatars ne bougent pas tous en même temps
+                const delay = (Math.random() * 2).toFixed(2) + "s";
+                div.querySelector(".avatar-icon").style.animationDelay = delay;
+                div.querySelectorAll(".eye").forEach(eye => eye.style.animationDelay = delay);
+            });
+        }
+
+        function attemptLogin(person) {
+            const pin = prompt(`Code PIN de ${person.display} :`);
+            if (pin === null) return; // annulé
+            if (pin.trim() === person.pin) {
+                login(person.display);
+            } else {
+                alert("Code PIN incorrect.");
+            }
+        }
+
+        function login(user) {
+            currentUser = user;
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-screen").style.display = "block";
+            document.getElementById("welcome-title").innerText = `🍷 QG - Connectée : ${user}`;
+            loadPlanning();
+        }
+
+        function logout() {
+            currentUser = "";
+            document.getElementById("app-screen").style.display = "none";
+            document.getElementById("login-screen").style.display = "block";
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.setAttribute("data-theme", body.getAttribute("data-theme") === "light" ? "dark" : "light");
+
+            const btn = document.getElementById("theme-toggle-btn");
+            btn.classList.remove("spin");
+            void btn.offsetWidth; // force le redémarrage de l'animation
+            btn.classList.add("spin");
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById("btn-view-list").classList.toggle("active-view", view === "list");
+            document.getElementById("btn-view-calendar").classList.toggle("active-view", view === "calendar");
+            renderPlanning();
+        }
+
+        // ==========================================================
+        // CHARGEMENT DU PLANNING (lecture via CSV publié)
+        // ==========================================================
+        function parseCSVLine(line) {
+            // Découpe une ligne CSV en respectant les champs entre guillemets
+            const result = [];
+            let cur = "";
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (c === '"') {
+                    inQuotes = !inQuotes;
+                } else if (c === "," && !inQuotes) {
+                    result.push(cur);
+                    cur = "";
+                } else {
+                    cur += c;
+                }
+            }
+            result.push(cur);
+            return result;
+        }
+
+        async function loadPlanning() {
+            document.getElementById("content-container").innerHTML = "<p style='text-align:center;'>Chargement du planning...</p>";
+            try {
+                const response = await fetch(SHEET_CSV_URL + "&t=" + Date.now());
+                const data = await response.text();
+                const lines = data.split(/\r?\n/).filter(l => l.trim() !== "");
+
+                planningData = [];
+                // i = 0 est l'en-tête, la ligne CSV i correspond à la ligne i+1 de la feuille
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = parseCSVLine(lines[i]);
+                    if (cols.length < 7 || !cols[0]) continue;
+
+                    planningData.push({
+                        sheetRow: i + 1,
+                        date: cols[0].trim(),
+                        jour: cols[1].trim(),
+                        anais: cols[2].trim(),
+                        anneSophie: cols[3].trim(),
+                        celine: cols[4].trim(),
+                        sonia: cols[5].trim(),
+                        analyse: cols[6].trim()
+                    });
+                }
+                renderPlanning();
+            } catch (error) {
+                document.getElementById("content-container").innerHTML = "<p style='text-align:center; color:red;'>Erreur de chargement du planning.</p>";
+            }
+        }
+
+        // ==========================================================
+        // RENDU
+        // ==========================================================
+        function renderPlanning() {
+            const container = document.getElementById("content-container");
+            container.innerHTML = "";
+
+            if (currentView === "list") {
+                renderListView(container);
+            } else {
+                renderCalendarView(container);
+            }
+        }
+
+        function renderListView(container) {
+            planningData.forEach((item, index) => {
+                container.appendChild(buildCard(item, index));
+            });
+        }
+
+        function buildCard(item, index) {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <div class="date-header">
+                    <span>🌙 Soirée du ${item.jour} ${item.date}</span>
+                    <span class="status-global">${item.analyse}</span>
+                </div>
+                <div class="participants-row">
+                    ${PEOPLE.map(p => `
+                        <div class="participant-badge">
+                            <span>${p.short}</span>
+                            <button class="round-btn ${getStateClass(item[p.key])}"
+                                    onclick="changeStatus(${index}, '${p.key}')">
+                                ${getShortState(item[p.key])}
+                            </button>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+            return card;
+        }
+
+        function getStateClass(state) {
+            state = state || "";
+            if (state.includes("enfants") || state.includes("👶")) return "state-bebe";
+            if (state.includes("Dispo")) return "state-dispo";
+            return "state-indispo";
+        }
+
+        function getShortState(state) {
+            state = state || "";
+            if (state.includes("enfants") || state.includes("👶")) return "👶";
+            if (state.includes("Dispo")) return "✓";
+            return "✕";
+        }
+
+        // ==========================================================
+        // CYCLE DE STATUT + ECRITURE REELLE VERS GOOGLE SHEETS
+        // Ordre : Dispo -> Indispo -> Dispo - enfants -> Dispo
+        // ==========================================================
+        function nextStatus(current) {
+            current = current || "";
+            if (current.includes("enfants")) return "Dispo";
+            if (current.includes("Dispo")) return "Indispo";
+            return "Dispo - enfants";
+        }
+
+        async function changeStatus(index, personKey) {
+            if (APPS_SCRIPT_URL.includes("COLLE_ICI")) {
+                alert("L'URL de l'Apps Script n'a pas encore été configurée dans le code (APPS_SCRIPT_URL).");
+                return;
+            }
+
+            const item = planningData[index];
+            const person = PEOPLE.find(p => p.key === personKey);
+            const oldVal = item[personKey];
+            const newVal = nextStatus(oldVal);
+
+            // Mise à jour optimiste de l'affichage
+            item[personKey] = newVal;
+            renderPlanning();
+
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=updateStatus`
+                    + `&row=${item.sheetRow}`
+                    + `&personne=${encodeURIComponent(person.column)}`
+                    + `&statut=${encodeURIComponent(newVal)}`;
+                const resp = await fetch(url);
+                const result = await resp.json();
+
+                if (!result.success) {
+                    alert("Erreur d'enregistrement : " + (result.error || "inconnue"));
+                    item[personKey] = oldVal; // on annule le changement local
+                    renderPlanning();
+                }
+            } catch (err) {
+                alert("Erreur réseau : le statut n'a pas pu être sauvegardé. Nouvelle tentative au prochain chargement.");
+                item[personKey] = oldVal;
+                renderPlanning();
+            }
+        }
+
+        // ==========================================================
+        // VUE CALENDRIER MENSUEL (vraie grille)
+        // ==========================================================
+        function parseDate(str) {
+            if (!str) return null;
+            str = str.trim();
+            let m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (m) return new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+            m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+            if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+            const d = new Date(str);
+            return isNaN(d) ? null : d;
+        }
+
+        function renderCalendarView(container) {
+            const monthNames = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+            const nav = document.createElement("div");
+            nav.className = "card";
+            nav.innerHTML = `
+                <div class="calendar-nav">
+                    <button onclick="changeMonth(-1)">←</button>
+                    <span>${monthNames[calMonth]} ${calYear}</span>
+                    <button onclick="changeMonth(1)">→</button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            `;
+            container.appendChild(nav);
+
+            const detail = document.createElement("div");
+            detail.id = "calendar-day-detail";
+            container.appendChild(detail);
+
+            const grid = nav.querySelector("#calendar-grid");
+            ["Lu","Ma","Me","Je","Ve","Sa","Di"].forEach(d => {
+                const h = document.createElement("div");
+                h.className = "calendar-day-header";
+                h.textContent = d;
+                grid.appendChild(h);
+            });
+
+            const firstOfMonth = new Date(calYear, calMonth, 1);
+            // Lundi = 0 ... Dimanche = 6
+            const startOffset = (firstOfMonth.getDay() + 6) % 7;
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+            for (let i = 0; i < startOffset; i++) {
+                const empty = document.createElement("div");
+                empty.className = "calendar-day empty";
+                grid.appendChild(empty);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cellDate = new Date(calYear, calMonth, day);
+                const matchIndex = planningData.findIndex(item => {
+                    const d = parseDate(item.date);
+                    return d && d.getFullYear() === cellDate.getFullYear()
+                        && d.getMonth() === cellDate.getMonth()
+                        && d.getDate() === cellDate.getDate();
+                });
+
+                const cell = document.createElement("div");
+                cell.className = "calendar-day" + (matchIndex !== -1 ? " has-event" : "");
+                cell.innerHTML = `<span>${day}</span>`;
+                if (matchIndex !== -1) {
+                    cell.innerHTML += `<span class="dot" style="background:${dotColorForItem(planningData[matchIndex])}"></span>`;
+                    cell.onclick = () => showDayDetail(matchIndex);
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        function dotColorForItem(item) {
+            const nbDispo = PEOPLE.filter(p => (item[p.key] || "").includes("Dispo")).length;
+            if (nbDispo === PEOPLE.length) return "#2ed573";
+            if (nbDispo === 0) return "#ff4757";
+            return "#eccc68";
+        }
+
+        function showDayDetail(index) {
+            const detail = document.getElementById("calendar-day-detail");
+            detail.innerHTML = "";
+            detail.appendChild(buildCard(planningData[index], index));
+        }
+
+        function changeMonth(delta) {
+            calMonth += delta;
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderPlanning();
+        }
+
+        // ==========================================================
+        // INITIALISATION
+        // ==========================================================
+        buildLoginScreen();
+    </script>
+</body>
+</html>
