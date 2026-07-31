@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetra Studio | Direction Artistique & Branding de Luxe</title>
+    <meta name="description" content="Studio de design graphique expert en identité visuelle, branding premium et interfaces UI/UX immersives.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Tetra Studio",
+    "description": "Expertise en branding et design graphique haut de gamme.",
+    "url": "https://www.tetrastudio.fr"
+    }
+    </script>
+</head>
+<body>
+
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <nav class="navbar" role="navigation" aria-label="Menu principal">
+        <div class="logo" aria-hidden="true">Tetra Studio</div>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#portfolio">Projets</a></li>
+            <li><a href="#services">Expertise</a></li>
+            <li><a href="#pricing">Investissement</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact" class="btn-small">Démarrer un projet</a></li>
+        </ul>
+
+        <!-- Burger button (mobile uniquement) -->
+        <button class="burger" id="burger-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Menu mobile overlay -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu mobile">
+        <button class="mobile-menu__close" id="mobile-menu-close" aria-label="Fermer le menu">&times;</button>
+        <nav>
+            <ul>
+                <li><a href="#portfolio" class="mobile-nav-link">Projets</a></li>
+                <li><a href="#services" class="mobile-nav-link">Expertise</a></li>
+                <li><a href="#pricing" class="mobile-nav-link">Investissement</a></li>
+                <li><a href="#faq" class="mobile-nav-link">FAQ</a></li>
+                <li><a href="#contact" class="mobile-nav-link mobile-cta">Démarrer un projet</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main id="main-content">
+        <header class="hero">
+            <div class="hero-content">
+                <h1 class="reveal-text">Studio de <br>
+                    <span class="outline">Branding global<nobr> :</nobr><br></span>
+                    <p class="h1sub">identités visuelles, <nobr>design digital & print</nobr></p>
+                </h1>
+                <p class="hero-sub reveal-text delay-1">Nous concevons des écosystèmes graphiques cohérents pour propulser votre marque sur tous les supports, du pixel au papier.</p>
+                <div class="cta-group reveal-text delay-2">
+                    <a href="#portfolio" class="btn-primary" aria-label="Consulter le portfolio">Voir le portfolio</a>
+                    <a href="mailto:hello@tetrastudio.fr" class="btn-secondary">Me contacter</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="social-proof" aria-hidden="true">
+            <p class="marquee-label">Expertise</p>
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <span class="skill">BRANDING</span> <span class="dot">•</span>
+                    <span class="skill">IDENTITE VISUELLE</span> <span class="dot">•</span>
+                    <span class="skill">SITE INTERNET</span> <span class="dot">•</span>
+                    <span class="skill">LOGO</span> <span class="dot">•</span>
+                    <span class="skill">PRINT</span> <span class="dot">•</span>
+                    <span class="skill">DIGITAL</span> <span class="dot">•</span>
+                    <span class="skill">UI/UX DESIGN</span> <span class="dot">•</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PORTFOLIO — grille optimisée avec filtres -->
+        <section id="portfolio" class="portfolio">
+            <div class="portfolio-header container">
+                <h2 class="section-title">Réalisations</h2>
+                <div class="portfolio-filters" role="tablist" aria-label="Filtrer les projets">
+                    <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">Tous</button>
+                    <button class="filter-btn" data-filter="branding" role="tab" aria-selected="false">Branding</button>
+                    <button class="filter-btn" data-filter="digital" role="tab" aria-selected="false">Digital</button>
+                    <button class="filter-btn" data-filter="motion" role="tab" aria-selected="false">Motion</button>
+                </div>
+            </div>
+
+            <div class="portfolio-grid">
+                <article class="project-card project-card--featured reveal-item" data-category="branding">
+                    <img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=1400"
+                        alt="Branding minimaliste Or et Noir — Concept 01"
+                        loading="lazy" width="1400" height="900">
+                    <div class="project-info">
+                        <span class="project-category">UI/UX Design</span>
+                        <h3>Concept_01</h3>
+                        <p>Refonte complète de l'identité visuelle pour une marque de luxe émergente.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 01">Voir le projet →</a>
+                    </div>
+                </article>
+
+                <article class="project-card reveal-item delay-1" data-category="motion">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900"
+                        alt="Direction artistique futuriste — Concept 02"
+                        loading="lazy" width="900" height="600">
+                    <div class="project-info">
+                        <span class="project-category" style="color: var(--accent-red);">Direction Artistique</span>
+                        <h3>Concept_02</h3>
+                        <p>Univers visuel immersif pour une exposition tech internationale.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 02">Voir le projet →</a>
+                    </div>
+                </article>
+
+                <article class="project-card reveal-item delay-2" data-category="digital">
+                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=900"
+                        alt="Interface digitale épurée — Concept 03"
+                        loading="lazy" width="900" height="600">
+                    <div class="project-info">
+                        <span class="project-category" style="color: var(--accent-gold);">Digital</span>
+                        <h3>Concept_03</h3>
+                        <p>Design system et interface pour une plateforme SaaS premium.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 03">Voir le projet →</a>
+                    </div>
+                </article>
+
+                <article class="project-card reveal-item" data-category="branding">
+                    <img src="https://images.unsplash.com/photo-1634942537034-2531766767d1?q=80&w=900"
+                        alt="Identité typographique — Concept 04"
+                        loading="lazy" width="900" height="600">
+                    <div class="project-info">
+                        <span class="project-category">Branding</span>
+                        <h3>Concept_04</h3>
+                        <p>Identité typographique pour une maison d'édition indépendante.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 04">Voir le projet →</a>
+                    </div>
+                </article>
+                <article class="project-card reveal-item delay-1" data-category="motion">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=900"
+                        alt="Motion design et animation — Concept 05"
+                        loading="lazy" width="900" height="600">
+                    <div class="project-info">
+                        <span class="project-category" style="color: var(--accent-red);">Motion</span>
+                        <h3>Concept_05</h3>
+                        <p>Séquences animées et motion branding pour un lancement produit.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 05">Voir le projet →</a>
+                    </div>
+                </article>
+                <article class="project-card project-card--featured reveal-item delay-2" data-category="digital">
+                    <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=1400"
+                        alt="Dashboard UI haut de gamme — Concept 06"
+                        loading="lazy" width="1400" height="900">
+                    <div class="project-info">
+                        <span class="project-category" style="color: var(--accent-gold);">UI/UX Design</span>
+                        <h3>Concept_06</h3>
+                        <p>Tableau de bord analytique pour un groupe financier international.</p>
+                        <a href="#contact" class="project-link" aria-label="Voir le projet Concept 06">Voir le projet →</a>
+                    </div>
+                </article>
+            </div>
+            <div class="portfolio-cta container">
+                <a href="#contact" class="btn-secondary">Voir tous les projets</a>
+            </div>
+        </section>
+        <section id="services" class="services">
+            <div class="container">
+                <h2 class="section-title">Ce que nous faisons de mieux</h2>
+                <div class="services-grid">
+                    <div class="service-item reveal-item">
+                        <h3>01. Branding</h3>
+                        <p>Systèmes visuels complets : de la stratégie au déploiement de votre identité.</p>
+                    </div>
+                    <div class="service-item reveal-item">
+                        <h3>02. Digital</h3>
+                        <p>Interfaces centrées sur l'utilisateur, alliant performance et esthétique haut de gamme.</p>
+                    </div>
+                    <div class="service-item reveal-item">
+                        <h3>03. Motion</h3>
+                        <p>Donner vie à votre marque par le mouvement et la narration visuelle dynamique.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <h2 class="section-title">Investissement</h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card reveal-item">
+                        <h3>Audit Visuel</h3>
+                        <p class="price">800€<span> /forfait</span></p>
+                        <ul class="features">
+                            <li>Analyse ergonomique</li>
+                            <li>Revue de cohérence</li>
+                        </ul>
+                        <a href="#contact" class="btn-secondary">Réserver</a>
+                    </div>
+                    <div class="pricing-card highlighted reveal-item delay-1">
+                        <div class="badge" role="status">Le plus demandé</div>
+                        <h3>Identité Visuelle</h3>
+                        <p class="price" aria-label="Deux mille cinq cents euros">2 500€<span> /forfait</span></p>
+                        <ul class="features">
+                            <li>Logo & Palette</li>
+                            <li>Charte simplifiée</li>
+                        </ul>
+                        <a href="#contact" class="btn-primary">Lancer le sprint</a>
+                    </div>
+                    <div class="pricing-card reveal-item delay-2">
+                        <h3>Sur-Mesure</h3>
+                        <p class="price">Sur devis</p>
+                        <ul class="features">
+                            <li>Refonte globale</li>
+                            <li>Accompagnement 360°</li>
+                        </ul>
+                        <a href="#contact" class="btn-secondary">Discutons-en</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">Mots de nos clients</h2>
+                <div class="testimonial-card reveal-item">
+                    <p class="quote">"Le studio a transformé notre vision en une identité visuelle d'un niveau exceptionnel."</p>
+                    <div class="author"><strong>Marie Dubois</strong><span>CMO, TechVision</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="faq">
+            <div class="container">
+                <h2 class="section-title">FAQ</h2>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false" aria-controls="faq-1" id="btn-1">
+                            Comment se déroule un projet ? <span class="icon" aria-hidden="true">+</span>
+                        </button>
+                        <div id="faq-1" class="accordion-content" role="region" aria-labelledby="btn-1">
+                            <p>Nous passons par trois phases : Immersion, Création, et Livraison.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header" aria-expanded="false" aria-controls="faq-2" id="btn-2">
+                            Quels sont les délais ? <span class="icon" aria-hidden="true">+</span>
+                        </button>
+                        <div id="faq-2" class="accordion-content" role="region" aria-labelledby="btn-2">
+                            <p>Environ 2 semaines pour un Sprint et 8 semaines pour un projet complet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact" class="footer">
+        <div class="footer-cta">
+            <h2>Prêt à bousculer les codes ?</h2>
+            <a href="mailto:hello@tetrastudio.fr" class="btn-primary">hello@tetrastudio.fr</a>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tetra Studio.</p>
+            <div class="socials">
+                <a href="#" aria-label="Suivez-nous sur Instagram">Instagram</a>
+                <a href="#" aria-label="Suivez-nous sur LinkedIn">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
