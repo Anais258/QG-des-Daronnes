@@ -1014,6 +1014,23 @@
                 <button onclick="tirerIdee()">${icon("dice", 16)} Tirer une idée</button>
             `;
             container.appendChild(card);
+
+            const outingCard = document.createElement("div");
+            outingCard.className = "card";
+            outingCard.innerHTML = `
+                <div class="overview-title">Envie de sortir à Besançon ?</div>
+                <p style="opacity:0.75; margin-top:-6px;">Idées d'expos, spectacles et loisirs près de chez vous</p>
+                <iframe src="https://sortir.besancon.fr/" title="Sortir à Besançon"
+                        style="width:100%; height:480px; border:1px solid var(--border); border-radius:8px; margin:12px 0;"
+                        loading="lazy"></iframe>
+                <a class="whatsapp-link" href="https://sortir.besancon.fr/" target="_blank" rel="noopener">
+                    Ouvrir Sortir à Besançon dans un nouvel onglet
+                </a>
+                <p style="font-size:0.75rem; opacity:0.6; margin-top:8px;">
+                    Si le cadre ci-dessus reste vide, utilise le lien : certains sites bloquent l'affichage intégré.
+                </p>
+            `;
+            container.appendChild(outingCard);
         }
 
         function tirerIdee() {
