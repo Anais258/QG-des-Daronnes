@@ -86,6 +86,8 @@
             gap: 8px;
         }
         .avatar-card:hover {
+            background: var(--avatar-card-bg);
+            color: var(--text);
             border-color: var(--avatar-color, var(--primary));
             transform: translateY(-2px);
         }
@@ -514,8 +516,9 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #fff;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
-            max-width: 90%;
+            max-width: 95%;
             text-align: center;
+            white-space: nowrap;
         }
         .home-greeting .avatar-icon {
             width: 44px;
@@ -809,7 +812,7 @@
         </div>
         <div class="pin-title" id="pin-title">Code PIN</div>
         <label for="pin-input" class="sr-only">Code PIN</label>
-        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-input" class="pin-input" autocomplete="off" aria-describedby="pin-error" onkeydown="if(event.key==='Enter') submitPin();">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-input" class="pin-input" autocomplete="off" aria-describedby="pin-error" onkeydown="if(event.key==='Enter'){event.preventDefault(); submitPin();}">
         <div class="pin-error" id="pin-error" role="alert"></div>
         <div class="pin-actions">
             <button onclick="closePinModal()">Annuler</button>
@@ -1012,13 +1015,17 @@
             setTimeout(() => document.getElementById("pin-input").focus(), 50);
         }
 
-        function closePinModal() {
+        function closePinModal(returnFocus = true) {
             document.getElementById("pin-overlay").classList.remove("open");
             document.getElementById("pin-modal").classList.remove("open");
             pendingPinPerson = null;
-            if (pinTriggerEl) {
-                pinTriggerEl.focus();
-                pinTriggerEl = null;
+            const elToFocus = pinTriggerEl;
+            pinTriggerEl = null;
+            if (returnFocus && elToFocus) {
+                // Décalé au tick suivant : évite que le relâchement de la touche
+                // Entrée (keyup), une fois le focus revenu sur ce bouton, ne soit
+                // interprété par le navigateur comme un nouveau clic dessus.
+                setTimeout(() => elToFocus.focus(), 0);
             }
         }
 
@@ -1027,7 +1034,7 @@
             const input = document.getElementById("pin-input");
             if (input.value.trim() === pendingPinPerson.pin) {
                 const person = pendingPinPerson;
-                closePinModal();
+                closePinModal(false);
                 login(person.display);
             } else {
                 document.getElementById("pin-error").textContent = "Code incorrect, réessaie.";
