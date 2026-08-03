@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le QG des Daronnes</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff5e3a">
+    <link rel="apple-touch-icon" href="logo-qgd.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -747,6 +750,38 @@
             outline: 2px solid var(--primary);
             outline-offset: 2px;
         }
+
+        /* Notifications toast (remplacent les alert() du navigateur) */
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(300px, 90vw);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 40;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            padding: 10px 14px;
+            box-shadow: 0 6px 16px var(--shadow);
+            font-size: 0.85rem;
+            color: var(--text);
+            animation: toast-in 0.25s ease;
+            transition: opacity 0.3s ease;
+        }
+        .toast.toast-error { border-left-color: #e24b4a; }
+        .toast.toast-warn { border-left-color: #eccc68; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -850,6 +885,9 @@
         </button>
     </div>
 
+    <!-- Notifications toast -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
     <!-- Bouton remonter en haut -->
     <button id="scroll-top-btn" class="scroll-top-btn" onclick="scrollToTop()" title="Remonter en haut" aria-label="Remonter en haut">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -897,7 +935,9 @@
         // ==========================================================
 
         // URL de lecture (export CSV public du Google Sheet)
-        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRiOoyEA46xpeZ9xwlTLiK7SYF8Lpj11-HUGFFHwi7mW9YH8eIqjDmGgyVqmEqz2JIXnYlLnGG6uMxe/pub?gid=0&single=true&output=csv";
+        // (Ancienne lecture via CSV publié, remplacée par la lecture live via
+        // Apps Script — voir loadPlanning() plus bas. Conservé en commentaire
+        // au cas où : "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv")
 
         // ⚠️ A REMPLACER : URL du déploiement Apps Script (se termine par /exec)
         // Déploie Code.gs en Application Web puis colle l'URL ici.
@@ -1082,6 +1122,21 @@
             btn.classList.add("spin");
         }
 
+        // ==========================================================
+        // NOTIFICATIONS TOAST (remplacent les alert() du navigateur)
+        // ==========================================================
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toast-container");
+            const el = document.createElement("div");
+            el.className = "toast" + (type === "error" ? " toast-error" : type === "warn" ? " toast-warn" : "");
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 300);
+            }, 3500);
+        }
+
         function switchTab(tab) {
             currentTab = tab;
             ["accueil", "liste", "idee"].forEach(t => {
@@ -1100,27 +1155,10 @@
         }
 
         // ==========================================================
-        // CHARGEMENT DU PLANNING (lecture via CSV publié)
+        // CHARGEMENT DU PLANNING (lecture live via Apps Script)
         // ==========================================================
-        function parseCSVLine(line) {
-            // Découpe une ligne CSV en respectant les champs entre guillemets
-            const result = [];
-            let cur = "";
-            let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const c = line[i];
-                if (c === '"') {
-                    inQuotes = !inQuotes;
-                } else if (c === "," && !inQuotes) {
-                    result.push(cur);
-                    cur = "";
-                } else {
-                    cur += c;
-                }
-            }
-            result.push(cur);
-            return result;
-        }
+
+        const PLANNING_CACHE_KEY = "qgd_planning_cache_v1";
 
         async function loadPlanning() {
             const container = document.getElementById("content-container");
@@ -1133,30 +1171,35 @@
                 `;
             }
             try {
-                const response = await fetch(SHEET_CSV_URL + "&t=" + Date.now());
-                const data = await response.text();
-                const lines = data.split(/\r?\n/).filter(l => l.trim() !== "");
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=getPlanning&t=${Date.now()}`);
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error || "Erreur inconnue");
 
-                planningData = [];
-                // i = 0 est l'en-tête, la ligne CSV i correspond à la ligne i+1 de la feuille
-                for (let i = 1; i < lines.length; i++) {
-                    const cols = parseCSVLine(lines[i]);
-                    if (cols.length < 7 || !cols[0]) continue;
-
-                    planningData.push({
-                        sheetRow: i + 1,
-                        date: cols[0].trim(),
-                        jour: cols[1].trim(),
-                        anais: cols[2].trim(),
-                        anneSophie: cols[3].trim(),
-                        celine: cols[4].trim(),
-                        sonia: cols[5].trim(),
-                        analyse: cols[6].trim()
-                    });
+                planningData = result.rows;
+                try {
+                    localStorage.setItem(PLANNING_CACHE_KEY, JSON.stringify(planningData));
+                } catch (storageErr) {
+                    // Stockage local indisponible (navigation privée, etc.) : pas grave, on continue.
                 }
                 renderApp();
             } catch (error) {
-                container.innerHTML = "<p role='alert' style='text-align:center; color:#e24b4a;'>Erreur de chargement du planning.</p>";
+                // Pas de réseau ou Apps Script injoignable : on retombe sur la dernière
+                // copie connue du planning, si on en a une.
+                let cached = null;
+                try {
+                    const raw = localStorage.getItem(PLANNING_CACHE_KEY);
+                    if (raw) cached = JSON.parse(raw);
+                } catch (storageErr) {
+                    cached = null;
+                }
+
+                if (cached && cached.length > 0) {
+                    planningData = cached;
+                    renderApp();
+                    showToast("Hors-ligne : affichage des dernières données connues.", "warn");
+                } else {
+                    container.innerHTML = "<p role='alert' style='text-align:center; color:#e24b4a;'>Erreur de chargement du planning.</p>";
+                }
             }
         }
 
@@ -1210,6 +1253,12 @@
             nextCard.innerHTML = renderNextAvailable();
             container.appendChild(nextCard);
 
+            const statsCard = document.createElement("div");
+            statsCard.className = "card";
+            statsCard.style.textAlign = "center";
+            statsCard.innerHTML = renderFunStats();
+            container.appendChild(statsCard);
+
             if (WHATSAPP_URL) {
                 const waCard = document.createElement("div");
                 waCard.className = "card";
@@ -1220,6 +1269,42 @@
                 `;
                 container.appendChild(waCard);
             }
+        }
+
+        function renderFunStats() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            let reunionsCount = 0;
+            planningData.forEach(item => {
+                const d = parseDate(item.date);
+                if (!d || d < monthStart || d > today) return;
+                const status = computeGlobalStatus(item);
+                if (status.cls === "status-free" || status.cls === "status-free-kids") reunionsCount++;
+            });
+
+            const counts = PEOPLE.map(p => ({
+                person: p,
+                count: planningData.filter(item => (item[p.key] || "").includes("Dispo")).length
+            })).sort((a, b) => b.count - a.count);
+
+            let mostAvailableText;
+            if (counts.length === 0 || counts[0].count === 0) {
+                mostAvailableText = "Pas encore assez de dispos renseignées pour le savoir.";
+            } else {
+                const topCount = counts[0].count;
+                const tied = counts.filter(c => c.count === topCount).map(c => c.person.display);
+                mostAvailableText = tied.length > 1
+                    ? `${tied.join(" et ")} sont ex æquo, les plus dispo du groupe !`
+                    : `${tied[0]} est la plus dispo du groupe !`;
+            }
+
+            return `
+                <div class="overview-label">PETITES STATS</div>
+                <p style="margin:10px 0 6px;">🎉 Vous vous êtes toutes retrouvées <strong>${reunionsCount}</strong> fois ce mois-ci</p>
+                <p style="margin:0;">🏆 ${mostAvailableText}</p>
+            `;
         }
 
         function getUpcomingWeekend() {
@@ -1284,7 +1369,7 @@
 
         function goToDate(match, label) {
             if (!match) {
-                alert(`Le ${label} n'est pas encore renseigné dans le planning.`);
+                showToast(`Le ${label} n'est pas encore renseigné dans le planning.`, "warn");
                 return;
             }
             currentView = "list";
@@ -1310,15 +1395,52 @@
             const found = upcoming.find(x => PEOPLE.every(p => (x.item[p.key] || "").includes("Dispo")));
 
             if (found) {
+                const isoDate = `${found.d.getFullYear()}-${String(found.d.getMonth() + 1).padStart(2, "0")}-${String(found.d.getDate()).padStart(2, "0")}`;
                 return `
                     <div class="label">${icon("moon")} Prochaine soirée où tout le monde est dispo</div>
                     <div class="value">${found.item.jour} ${found.item.date}</div>
+                    <button onclick="downloadEventICS('${isoDate}')" style="margin-top:12px;">${icon("calendar", 16)} Ajouter à mon agenda perso</button>
                 `;
             }
             return `
                 <div class="label">${icon("clock")} Pas encore de date en commun</div>
                 <div class="value">Continuez à mettre vos dispos à jour !</div>
             `;
+        }
+
+        // Génère et télécharge un fichier .ics pour ajouter la soirée à un agenda perso
+        function downloadEventICS(isoDateStr) {
+            const [y, m, d] = isoDateStr.split("-").map(Number);
+            const pad = (n) => String(n).padStart(2, "0");
+            const dtStart = `${y}${pad(m)}${pad(d)}T200000`;
+            const dtEnd = `${y}${pad(m)}${pad(d)}T230000`;
+            const dtStamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+            const ics = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//QG des Daronnes//FR",
+                "BEGIN:VEVENT",
+                `UID:qgd-${isoDateStr}@qgdaronnes`,
+                `DTSTAMP:${dtStamp}`,
+                `DTSTART:${dtStart}`,
+                `DTEND:${dtEnd}`,
+                "SUMMARY:🍷 Soirée QG des Daronnes",
+                "DESCRIPTION:Soirée entre daronnes",
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ].join("\r\n");
+
+            const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `soiree-qgd-${isoDateStr}.ics`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Événement téléchargé, ouvre-le pour l'ajouter à ton agenda.");
         }
 
         // ----- Onglet Idée -----
@@ -1333,6 +1455,29 @@
             "Soirée déguisée 🎭",
             "Pique-nique au parc 🧺"
         ];
+        const CUSTOM_IDEAS_KEY = "qgd_custom_ideas_v1";
+        let lastIdeaDrawn = null;
+
+        function getCustomIdeas() {
+            try {
+                const raw = localStorage.getItem(CUSTOM_IDEAS_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveCustomIdeas(list) {
+            try {
+                localStorage.setItem(CUSTOM_IDEAS_KEY, JSON.stringify(list));
+            } catch (e) {
+                // Stockage indisponible : tant pis, la liste ne persistera pas.
+            }
+        }
+
+        function getAllIdeas() {
+            return IDEAS.concat(getCustomIdeas());
+        }
 
         function renderIdee(container) {
             const card = document.createElement("div");
@@ -1345,6 +1490,25 @@
                 <button onclick="tirerIdee()">${icon("dice", 16)} Tirer une idée</button>
             `;
             container.appendChild(card);
+
+            const addCard = document.createElement("div");
+            addCard.className = "card";
+            addCard.innerHTML = `
+                <div class="overview-label" style="text-align:center;">VOS IDÉES</div>
+                <label for="new-idea-input" class="sr-only">Ajouter une idée de soirée</label>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <input type="text" id="new-idea-input" class="search-input" style="margin-bottom:0;" placeholder="Ex: Soirée pâtisserie 🧁" maxlength="60">
+                    <button id="add-idea-btn" style="flex-shrink:0;">Ajouter</button>
+                </div>
+                <div id="custom-ideas-list" style="margin-top:12px;"></div>
+            `;
+            container.appendChild(addCard);
+            renderCustomIdeasList();
+
+            addCard.querySelector("#add-idea-btn").onclick = addCustomIdea;
+            addCard.querySelector("#new-idea-input").onkeydown = (e) => {
+                if (e.key === "Enter") addCustomIdea();
+            };
 
             const outingCard = document.createElement("div");
             outingCard.className = "card";
@@ -1365,13 +1529,60 @@
             container.appendChild(outingCard);
         }
 
+        function renderCustomIdeasList() {
+            const listEl = document.getElementById("custom-ideas-list");
+            if (!listEl) return;
+            const customIdeas = getCustomIdeas();
+            if (customIdeas.length === 0) {
+                listEl.innerHTML = `<p style="font-size:0.8rem; opacity:0.6; margin:0;">Aucune idée ajoutée pour l'instant.</p>`;
+                return;
+            }
+            listEl.innerHTML = customIdeas.map((idea, i) => `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid var(--border);">
+                    <span style="font-size:0.9rem;">${idea}</span>
+                    <button onclick="removeCustomIdea(${i})" aria-label="Retirer cette idée" style="padding:4px 10px;">✕</button>
+                </div>
+            `).join("");
+        }
+
+        function addCustomIdea() {
+            const input = document.getElementById("new-idea-input");
+            const value = input.value.trim();
+            if (!value) return;
+            const customIdeas = getCustomIdeas();
+            customIdeas.push(value);
+            saveCustomIdeas(customIdeas);
+            input.value = "";
+            renderCustomIdeasList();
+            showToast("Idée ajoutée !");
+        }
+
+        function removeCustomIdea(index) {
+            const customIdeas = getCustomIdeas();
+            customIdeas.splice(index, 1);
+            saveCustomIdeas(customIdeas);
+            renderCustomIdeasList();
+        }
+
         function tirerIdee() {
             const resultEl = document.getElementById("idee-result");
+            const pool = getAllIdeas();
             let count = 0;
             const spin = setInterval(() => {
-                resultEl.textContent = IDEAS[Math.floor(Math.random() * IDEAS.length)];
+                resultEl.textContent = pool[Math.floor(Math.random() * pool.length)];
                 count++;
-                if (count > 10) clearInterval(spin);
+                if (count > 10) {
+                    clearInterval(spin);
+                    // Évite de retomber deux fois de suite sur la même idée (si le pool le permet)
+                    let finalPick = pool[Math.floor(Math.random() * pool.length)];
+                    let attempts = 0;
+                    while (finalPick === lastIdeaDrawn && pool.length > 1 && attempts < 10) {
+                        finalPick = pool[Math.floor(Math.random() * pool.length)];
+                        attempts++;
+                    }
+                    lastIdeaDrawn = finalPick;
+                    resultEl.textContent = finalPick;
+                }
             }, 80);
         }
 
@@ -1415,7 +1626,7 @@
                         item.jour.toLowerCase().includes(q) || item.date.toLowerCase().includes(q)
                     );
                     if (!match) {
-                        alert("Aucune date trouvée pour cette recherche.");
+                        showToast("Aucune date trouvée pour cette recherche.", "warn");
                         return;
                     }
                     const d = parseDate(match.date);
@@ -1617,7 +1828,7 @@
 
         async function changeStatus(index, personKey) {
             if (APPS_SCRIPT_URL.includes("COLLE_ICI")) {
-                alert("L'URL de l'Apps Script n'a pas encore été configurée dans le code (APPS_SCRIPT_URL).");
+                showToast("L'URL de l'Apps Script n'a pas encore été configurée dans le code (APPS_SCRIPT_URL).", "error");
                 return;
             }
 
@@ -1639,12 +1850,12 @@
                 const result = await resp.json();
 
                 if (!result.success) {
-                    alert("Erreur d'enregistrement : " + (result.error || "inconnue"));
+                    showToast("Erreur d'enregistrement : " + (result.error || "inconnue"), "error");
                     item[personKey] = oldVal; // on annule le changement local
                     renderApp();
                 }
             } catch (err) {
-                alert("Erreur réseau : le statut n'a pas pu être sauvegardé. Nouvelle tentative au prochain chargement.");
+                showToast("Erreur réseau : le statut n'a pas pu être sauvegardé. Nouvelle tentative au prochain chargement.", "error");
                 item[personKey] = oldVal;
                 renderApp();
             }
@@ -1778,6 +1989,18 @@
                 closeMenu();
             }
         });
+
+        // ==========================================================
+        // PWA : enregistrement du service worker
+        // ==========================================================
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("sw.js").catch(() => {
+                    // Pas grave si ça échoue (ex: ouverture en local sans serveur) :
+                    // l'app fonctionne quand même normalement.
+                });
+            });
+        }
 
         // ==========================================================
         // INITIALISATION
