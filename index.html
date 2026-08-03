@@ -41,7 +41,7 @@
 
         /* Écran de Connexion */
         #login-screen {
-            width: min(300px, 100%);
+            width: min(350px, 100%);
             margin: 40px auto;
             text-align: center;
             background: var(--card-bg);
@@ -69,7 +69,7 @@
             gap: 8px;
         }
         .avatar-card:hover {
-            border-color: var(--primary);
+            border-color: var(--avatar-color, var(--primary));
             transform: translateY(-2px);
         }
         .avatar-card:hover .avatar-icon {
@@ -152,7 +152,7 @@
         /* Application principale */
         #app-screen {
             display: none;
-            width: min(300px, 100%);
+            width: min(350px, 100%);
             margin: 0 auto;
         }
         .top-bar {
@@ -168,7 +168,7 @@
         }
         .top-bar-title {
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.25rem;
             color: var(--primary);
             white-space: nowrap;
             overflow: hidden;
@@ -202,22 +202,25 @@
         .menu-overlay.open { display: block; }
         .menu-drawer {
             position: fixed;
-            top: 0; left: 0;
-            width: 260px;
-            max-width: 80vw;
-            height: 100%;
+            top: 0;
+            left: 50%;
+            width: min(350px, 100%);
+            max-height: 85vh;
+            overflow-y: auto;
             background: var(--card-bg);
-            box-shadow: 4px 0 12px var(--shadow);
-            transform: translateX(-100%);
+            box-shadow: 0 10px 24px var(--shadow);
+            transform: translate(-50%, -100%);
             transition: transform 0.3s ease;
             z-index: 21;
             padding: 20px;
             box-sizing: border-box;
+            border-radius: 0 0 16px 16px;
         }
-        .menu-drawer.open { transform: translateX(0); }
+        .menu-drawer.open { transform: translate(-50%, 0); }
         .menu-header {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             padding-bottom: 16px;
             margin-bottom: 16px;
@@ -228,9 +231,10 @@
         .menu-item {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             width: 100%;
-            text-align: left;
+            text-align: center;
             background: none;
             border: none;
             padding: 12px 4px;
@@ -253,7 +257,7 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: min(300px, 100%);
+            width: min(350px, 100%);
             display: flex;
             justify-content: space-around;
             background: var(--card-bg);
@@ -387,7 +391,7 @@
         /* Couleurs des états */
         .state-dispo { background: #2ed573; color: white; }
         .state-indispo { background: #ff4757; color: white; }
-        .state-bebe { background: #ffa502; color: #080808; }
+        .state-bebe { background: var(--primary); color: #080808; }
         .state-inconnu { background: var(--border); color: var(--text); opacity: 0.7; }
 
         /* Calendrier mensuel */
@@ -450,7 +454,7 @@
         /* Page d'accueil */
         .home-banner {
             position: relative;
-            width: 300px;
+            width: 200px;
             height: 300px;
             max-width: 100%;
             border-radius: 16px;
@@ -472,25 +476,26 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.45rem;
+            gap: 8px;
+            font-size: 1.1rem;
             font-weight: bold;
-            padding: 12px 18px;
+            padding: 10px 14px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: #fff;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
-            max-width: 85%;
+            max-width: 90%;
             text-align: center;
         }
         .home-greeting .avatar-icon {
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
             margin: 0;
             animation: none;
+            flex-shrink: 0;
         }
         .overview-label {
             text-transform: uppercase;
@@ -544,14 +549,14 @@
         }
 
         .btn-orange {
-            background: #ffa502;
+            background: var(--primary);
             color: #080808;
             border-radius: 10px;
             padding: 12px;
             margin-top: 8px;
         }
         .btn-orange:hover {
-            background: #ffa502;
+            background: var(--primary);
             opacity: 0.9;
         }
 
@@ -623,7 +628,13 @@
 
     <div id="app-screen">
         <div class="top-bar">
-            <button onclick="toggleMenu()" title="Menu">☰</button>
+            <button onclick="toggleMenu()" title="Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="18" height="18">
+                    <line x1="4" y1="7" x2="20" y2="7"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
             <span class="top-bar-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-3px; margin-right:2px;">
                     <path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/>
@@ -741,7 +752,7 @@
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
         // (ex: "images/banniere.jpg" si tu ajoutes le fichier dans ton repo GitHub).
         // Laisse vide "" pour un dégradé de couleur à la place.
-        const HOME_BANNER_URL = "https://picsum.photos/300/300";
+        const HOME_BANNER_URL = "https://picsum.photos/200/300";
 
         // 💬 Lien vers le groupe WhatsApp (menu + page d'accueil)
         const WHATSAPP_URL = "https://chat.whatsapp.com/Gb2c0ayE9v9DhASPU4MQsb";
@@ -774,6 +785,7 @@
             PEOPLE.forEach(p => {
                 const div = document.createElement("div");
                 div.className = "avatar-card";
+                div.style.setProperty("--avatar-color", p.color);
                 div.innerHTML = `
                     <svg class="avatar-icon" viewBox="0 0 48 48">${avatarSvgInner(p)}</svg>
                     <span>${p.display}</span>
