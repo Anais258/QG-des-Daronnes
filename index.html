@@ -289,8 +289,6 @@
             border-color: var(--primary);
         }
 
-        /* espace réservé aux vues */
-
         /* Cartes de soirées */
         .card {
             background: var(--card-bg);
@@ -299,6 +297,11 @@
             margin-bottom: 12px;
             box-shadow: 0 4px 6px var(--shadow);
             border: 1px solid var(--border);
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        .card.highlight-flash {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary);
         }
         .date-header {
             font-weight: bold;
@@ -362,6 +365,7 @@
         .state-dispo { background: #2ed573; color: white; }
         .state-indispo { background: #ff4757; color: white; }
         .state-bebe { background: #ffa502; color: white; }
+        .state-inconnu { background: var(--border); color: var(--text); opacity: 0.7; }
 
         /* Calendrier mensuel */
         .calendar-nav {
@@ -608,13 +612,12 @@
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRiOoyEA46xpeZ9xwlTLiK7SYF8Lpj11-HUGFFHwi7mW9YH8eIqjDmGgyVqmEqz2JIXnYlLnGG6uMxe/pub?gid=0&single=true&output=csv";
 
         // ⚠️ A REMPLACER : URL du déploiement Apps Script (se termine par /exec)
-        // Déploie Code.gs en Application Web puis colle l'URL ici.
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyDlJf7V5k9PG4PX99yWMQtEEQbS52eZDmCLJvYAB9B4m-FvKJcAhW-jdeOeGPCgc/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyI9Ecs6VduY3bRyYf4wUuAiid0RD6mPZCcy-K6snSqtrQ6Vlf-1prrB_kKE8Z3ps/exec";
 
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
         // (ex: "images/banniere.jpg" si tu ajoutes le fichier dans ton repo GitHub).
         // Laisse vide "" pour un dégradé de couleur à la place.
-        const HOME_BANNER_URL = "";
+        const HOME_BANNER_URL = "https://picsum.photos/200/300";
 
         // 💬 Lien vers le groupe WhatsApp (menu + page d'accueil)
         const WHATSAPP_URL = "";
@@ -891,7 +894,8 @@
 
         function renderWeekendOverview(target) {
             const weekend = getUpcomingWeekend();
-            target.innerHTML = weekend.map(({ label, date }) => {
+            target.innerHTML = "";
+            weekend.forEach(({ label, date }) => {
                 const match = planningData.find(item => {
                     const d = parseDate(item.date);
                     return d && d.getFullYear() === date.getFullYear()
@@ -903,16 +907,35 @@
                     const dispoNames = PEOPLE.filter(p => (match[p.key] || "").includes("Dispo")).map(p => p.display);
                     names = dispoNames.length ? dispoNames.join(", ") : "Personne de dispo";
                 }
-                return `
-                    <div class="overview-row">
-                        <div>
-                            <div class="day-name">${label}</div>
-                            <div class="day-people">Dispo : ${names}</div>
-                        </div>
-                        <span class="chevron">›</span>
+                const row = document.createElement("div");
+                row.className = "overview-row";
+                row.innerHTML = `
+                    <div>
+                        <div class="day-name">${label}</div>
+                        <div class="day-people">Dispo : ${names}</div>
                     </div>
+                    <span class="chevron">›</span>
                 `;
-            }).join("");
+                row.onclick = () => goToDate(match, label);
+                target.appendChild(row);
+            });
+        }
+
+        function goToDate(match, label) {
+            if (!match) {
+                alert(`Le ${label} n'est pas encore renseigné dans le planning.`);
+                return;
+            }
+            currentView = "list";
+            switchTab("liste");
+            requestAnimationFrame(() => {
+                const card = document.querySelector(`[data-row="${match.sheetRow}"]`);
+                if (card) {
+                    card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    card.classList.add("highlight-flash");
+                    setTimeout(() => card.classList.remove("highlight-flash"), 1500);
+                }
+            });
         }
 
         function renderNextAvailable() {
@@ -943,7 +966,6 @@
             "Resto entre daronnes 🍕",
             "Apéro chez l'une de vous 🍷",
             "Ciné + pyjama party 🍿",
-            "Spa & Netflix 🛀",
             "Karaoké improvisé 🎤",
             "Cours de cuisine maison 👩‍🍳",
             "Balade + café 🚶‍♀️☕",
@@ -1026,6 +1048,7 @@
         function buildCard(item, index) {
             const card = document.createElement("div");
             card.className = "card";
+            card.dataset.row = item.sheetRow;
             const myKey = getCurrentPersonKey();
             card.innerHTML = `
                 <div class="date-header">
@@ -1054,6 +1077,7 @@
 
         function getStateClass(state) {
             state = state || "";
+            if (state.trim() === "") return "state-inconnu";
             if (state.includes("enfants") || state.includes("👶")) return "state-bebe";
             if (state.includes("Dispo")) return "state-dispo";
             return "state-indispo";
@@ -1061,6 +1085,7 @@
 
         function getShortState(state) {
             state = state || "";
+            if (state.trim() === "") return "?";
             if (state.includes("enfants") || state.includes("👶")) return "👶";
             if (state.includes("Dispo")) return "✓";
             return "✕";
@@ -1068,10 +1093,11 @@
 
         // ==========================================================
         // CYCLE DE STATUT + ECRITURE REELLE VERS GOOGLE SHEETS
-        // Ordre : Dispo -> Indispo -> Dispo - enfants -> Dispo
+        // Ordre : (pas encore répondu) -> Dispo -> Indispo -> Dispo - enfants -> Dispo
         // ==========================================================
         function nextStatus(current) {
             current = current || "";
+            if (current.trim() === "") return "Dispo";
             if (current.includes("enfants")) return "Dispo";
             if (current.includes("Dispo")) return "Indispo";
             return "Dispo - enfants";
