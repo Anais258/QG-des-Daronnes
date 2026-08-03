@@ -17,6 +17,7 @@
             --avatar-card-bg: #ffffff;
             --text: #080808;
             --primary: #ff5e3a;
+            --primary-transparent: rgba(255, 94, 58, 0.82);
             --border: #dfe4ea;
             --shadow: rgba(0,0,0,0.05);
         }
@@ -26,6 +27,7 @@
             --avatar-card-bg: #1e1e24;
             --text: #f1f2f6;
             --primary: #ff9142;
+            --primary-transparent: rgba(255, 145, 66, 0.82);
             --border: #3f3f4e;
             --shadow: rgba(0,0,0,0.3);
         }
@@ -122,8 +124,8 @@
         /* Icône soleil/lune animée pour le bouton thème */
         .theme-icon {
             position: relative;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             display: inline-block;
             vertical-align: middle;
         }
@@ -483,7 +485,7 @@
         /* Page d'accueil */
         .home-banner {
             position: relative;
-            width: 300px;
+            width: 350px;
             height: 200px;
             max-width: 100%;
             border-radius: 16px;
@@ -599,16 +601,41 @@
             gap: 16px;
             padding: 70px 20px;
         }
-        .loading-spinner {
-            width: 42px;
-            height: 42px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: loading-spin 0.8s linear infinite;
+        .pour-anim {
+            width: 90px;
+            height: 90px;
         }
-        @keyframes loading-spin {
-            to { transform: rotate(360deg); }
+        .pour-anim .bottle-group {
+            transform-origin: 30px 78px;
+            animation: bottle-tilt 2.4s ease-in-out infinite;
+        }
+        @keyframes bottle-tilt {
+            0%, 100% { transform: rotate(-28deg); }
+            50% { transform: rotate(-33deg); }
+        }
+        .pour-anim .droplet {
+            opacity: 0;
+            animation: droplet-fall 1.2s ease-in infinite;
+        }
+        .pour-anim .droplet:nth-child(2) { animation-delay: 0.3s; }
+        .pour-anim .droplet:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes droplet-fall {
+            0% { opacity: 0; transform: translate(0, 0); }
+            15% { opacity: 1; }
+            85% { opacity: 1; transform: translate(4px, 22px); }
+            100% { opacity: 0; transform: translate(5px, 25px); }
+        }
+        .pour-anim .liquid-fill {
+            transform: scaleY(0);
+            transform-box: fill-box;
+            transform-origin: bottom;
+            animation: liquid-rise 2.4s ease-in-out infinite;
+        }
+        @keyframes liquid-rise {
+            0% { transform: scaleY(0); }
+            55% { transform: scaleY(1); }
+            85% { transform: scaleY(1); }
+            100% { transform: scaleY(0); }
         }
         .loading-text {
             font-family: 'Fraunces', serif;
@@ -739,9 +766,9 @@
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--primary-transparent);
             color: #080808;
-            border: none;
+            border: 2px solid #3a3a3a;
             display: none;
             align-items: center;
             justify-content: center;
@@ -751,7 +778,7 @@
             font-size: 1.1rem;
         }
         .scroll-top-btn:hover {
-            background: var(--primary);
+            background: var(--primary-transparent);
             opacity: 0.9;
         }
 
@@ -828,18 +855,13 @@
     <div id="app-screen">
         <div class="top-bar">
             <button onclick="toggleMenu()" id="menu-toggle-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-drawer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="18" height="18" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="24" height="24" aria-hidden="true">
                     <line x1="4" y1="7" x2="20" y2="7"/>
                     <line x1="4" y1="12" x2="20" y2="12"/>
                     <line x1="4" y1="17" x2="20" y2="17"/>
                 </svg>
             </button>
             <h1 class="top-bar-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="flex-shrink:0;" aria-hidden="true">
-                    <path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/>
-                    <line x1="12" y1="12" x2="12" y2="19"/>
-                    <line x1="8" y1="21" x2="16" y2="21"/>
-                </svg>
                 <span class="top-bar-title-text">Le QG des Daronnes</span>
             </h1>
             <button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="Passer en mode sombre">
@@ -956,7 +978,7 @@
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
         // (ex: "images/banniere.jpg" si tu ajoutes le fichier dans ton repo GitHub).
         // Laisse vide "" pour un dégradé de couleur à la place.
-        const HOME_BANNER_URL = "https://picsum.photos/300/200";
+        const HOME_BANNER_URL = "https://picsum.photos/350/200";
 
         // 💬 Lien vers le groupe WhatsApp (menu + page d'accueil)
         const WHATSAPP_URL = "https://chat.whatsapp.com/Gb2c0ayE9v9DhASPU4MQsb";
@@ -1048,10 +1070,18 @@
             }
         }
 
+        const SESSION_KEY = "qgd_session_user_v1";
+
         function login(user) {
             currentUser = user;
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("app-screen").style.display = "block";
+
+            try {
+                localStorage.setItem(SESSION_KEY, user);
+            } catch (e) {
+                // Stockage indisponible : la session ne persistera juste pas au rechargement.
+            }
 
             // Remplit le menu latéral avec le nom + l'avatar de la personne connectée
             const person = PEOPLE.find(p => p.display === user);
@@ -1076,6 +1106,11 @@
         function logout() {
             currentUser = "";
             closeMenu();
+            try {
+                localStorage.removeItem(SESSION_KEY);
+            } catch (e) {
+                // Pas grave.
+            }
             document.getElementById("bottom-nav").style.display = "none";
             document.getElementById("app-screen").style.display = "none";
             document.getElementById("login-screen").style.display = "block";
@@ -1177,7 +1212,21 @@
             if (planningData.length === 0) {
                 container.innerHTML = `
                     <div class="loading-wrap" role="status" aria-live="polite">
-                        <div class="loading-spinner" aria-hidden="true"></div>
+                        <svg class="pour-anim" viewBox="0 0 90 90" aria-hidden="true" style="color: var(--primary);">
+                            <path d="M50 48 L76 48 L68 84 L58 84 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                            <clipPath id="pourGlassClip">
+                                <path d="M50 48 L76 48 L68 84 L58 84 Z"/>
+                            </clipPath>
+                            <rect class="liquid-fill" x="50" y="48" width="26" height="36" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
+                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
+                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
+                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
+                            <g class="bottle-group">
+                                <rect x="10" y="34" width="22" height="38" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <rect x="17" y="18" width="8" height="18" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <rect x="15" y="13" width="12" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                            </g>
+                        </svg>
                         <div class="loading-text">Chargement du planning...</div>
                     </div>
                 `;
@@ -2018,6 +2067,17 @@
         // INITIALISATION
         // ==========================================================
         buildLoginScreen();
+
+        (function restoreSession() {
+            try {
+                const savedUser = localStorage.getItem(SESSION_KEY);
+                if (savedUser && PEOPLE.some(p => p.display === savedUser)) {
+                    login(savedUser);
+                }
+            } catch (e) {
+                // Pas de session à restaurer, on reste sur l'écran de connexion.
+            }
+        })();
     </script>
 </body>
 </html>
