@@ -6,7 +6,7 @@
     <title>Le QG des Daronnes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f7f6f4;
@@ -26,7 +26,7 @@
         }
 
         body {
-            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -433,8 +433,9 @@
 
         /* Page d'accueil */
         .home-banner {
+            position: relative;
             width: 100%;
-            height: 150px;
+            height: 220px;
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 16px;
@@ -447,13 +448,24 @@
             display: block;
         }
         .home-greeting {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             font-size: 1.45rem;
             font-weight: bold;
-            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: rgba(20, 20, 25, 0.35);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
         .home-greeting .avatar-icon {
             width: 38px;
@@ -513,7 +525,19 @@
             padding: 10px;
         }
 
-        /* Titres : Fraunces (chaleureux + sérieux), reste en Quicksand */
+        .btn-orange {
+            background: #ffa502;
+            color: #000;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+        .btn-orange:hover {
+            background: #ffa502;
+            opacity: 0.9;
+        }
+
+        /* Titres : Fraunces (chaleureux + sérieux), reste en Inter */
         #login-screen h2,
         .top-bar-title,
         .home-greeting span,
@@ -531,7 +555,7 @@
             border: 1px solid var(--border);
             background: var(--card-bg);
             color: var(--text);
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             margin-bottom: 12px;
         }
@@ -569,7 +593,7 @@
 
     <div id="login-screen">
         <h2>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align:-4px; margin-right:4px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align:-4px; margin-right:4px;">
                 <path d="M4 11.5 12 4l8 7.5"/>
                 <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/>
             </svg>
@@ -583,7 +607,7 @@
         <div class="top-bar">
             <button onclick="toggleMenu()" title="Menu">☰</button>
             <span class="top-bar-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-3px; margin-right:2px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-3px; margin-right:2px;">
                     <path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/>
                     <line x1="12" y1="12" x2="12" y2="19"/>
                     <line x1="8" y1="21" x2="16" y2="21"/>
@@ -592,7 +616,7 @@
             </span>
             <button id="theme-toggle-btn" onclick="toggleTheme()" title="Mode Sombre">
                 <span class="theme-icon">
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
                         <circle cx="12" cy="12" r="4"/>
                         <line x1="12" y1="2" x2="12" y2="4"/>
                         <line x1="12" y1="20" x2="12" y2="22"/>
@@ -621,20 +645,20 @@
             <span id="menu-user-name">Connectée : —</span>
         </div>
         <button class="menu-item" id="menu-refresh-btn" onclick="manualRefresh()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                 <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
                 <path d="M20 4v5h-5"/>
             </svg>
             <span>Actualiser le planning</span>
         </button>
         <a class="menu-item" id="menu-whatsapp-link" href="#" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
             </svg>
             <span>Groupe WhatsApp</span>
         </a>
         <button class="menu-item" onclick="logout()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
                 <line x1="21" y1="12" x2="9" y2="12"/>
@@ -645,7 +669,7 @@
 
     <!-- Bouton remonter en haut -->
     <button id="scroll-top-btn" class="scroll-top-btn" onclick="scrollToTop()" title="Remonter en haut" aria-label="Remonter en haut">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
             <line x1="12" y1="19" x2="12" y2="5"/>
             <polyline points="5 12 12 5 19 12"/>
         </svg>
@@ -654,14 +678,14 @@
     <!-- Barre de navigation du bas -->
     <nav class="bottom-nav" id="bottom-nav" style="display:none;">
         <button id="nav-accueil" onclick="switchTab('accueil')">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 11.5 12 4l8 7.5"/>
                 <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/>
             </svg>
             <span>Accueil</span>
         </button>
         <button id="nav-liste" onclick="switchTab('liste')">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/>
                 <line x1="9" y1="6" x2="20" y2="6"/>
                 <circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/>
@@ -672,7 +696,7 @@
             <span>Liste</span>
         </button>
         <button id="nav-idee" onclick="switchTab('idee')">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="4" y="4" width="16" height="16" rx="4"/>
                 <circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/>
                 <circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/>
@@ -699,7 +723,7 @@
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
         // (ex: "images/banniere.jpg" si tu ajoutes le fichier dans ton repo GitHub).
         // Laisse vide "" pour un dégradé de couleur à la place.
-        const HOME_BANNER_URL = "https://picsum.photos/200/300";
+        const HOME_BANNER_URL = "https://picsum.photos/300/300";
 
         // 💬 Lien vers le groupe WhatsApp (menu + page d'accueil)
         const WHATSAPP_URL = "https://chat.whatsapp.com/Gb2c0ayE9v9DhASPU4MQsb";
@@ -804,12 +828,12 @@
         function avatarSvgInner(p) {
             if (!p) return "";
             return `
-                <circle cx="24" cy="24" r="20" fill="none" stroke="var(--text)" stroke-width="3"/>
-                <path class="eye" d="M14 20 Q17.5 15.5 21 20" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
-                <path class="eye" d="M27 20 Q30.5 15.5 34 20" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="14.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="3"/>
-                <circle cx="33.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="3"/>
-                <path d="M14.5 30 Q24 38 33.5 30" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="24" cy="24" r="20" fill="none" stroke="var(--text)" stroke-width="1.8"/>
+                <path class="eye" d="M14 20 Q17.5 15.5 21 20" fill="none" stroke="var(--text)" stroke-width="1.35" stroke-linecap="round"/>
+                <path class="eye" d="M27 20 Q30.5 15.5 34 20" fill="none" stroke="var(--text)" stroke-width="1.35" stroke-linecap="round"/>
+                <circle cx="14.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="1.8"/>
+                <circle cx="33.5" cy="28" r="4" fill="none" stroke="${p.color}" stroke-width="1.8"/>
+                <path d="M14.5 30 Q24 38 33.5 30" fill="none" stroke="var(--text)" stroke-width="1.35" stroke-linecap="round"/>
             `;
         }
 
@@ -917,7 +941,6 @@
             if (HOME_BANNER_URL) {
                 banner.innerHTML = `<img src="${HOME_BANNER_URL}" alt="Bannière">`;
             }
-            container.appendChild(banner);
 
             const greeting = document.createElement("div");
             greeting.className = "home-greeting";
@@ -925,7 +948,8 @@
                 <svg class="avatar-icon" viewBox="0 0 48 48">${avatarSvgInner(person)}</svg>
                 <span>Salut ${currentUser} !</span>
             `;
-            container.appendChild(greeting);
+            banner.appendChild(greeting);
+            container.appendChild(banner);
 
             const overviewCard = document.createElement("div");
             overviewCard.className = "card";
@@ -948,7 +972,7 @@
                 waCard.style.textAlign = "center";
                 waCard.innerHTML = `
                     <div class="overview-label">GROUPE WHATSAPP</div>
-                    <a class="whatsapp-link" href="${WHATSAPP_URL}" target="_blank" rel="noopener">💬 Ouvrir la discussion</a>
+                    <a class="whatsapp-link btn-orange" href="${WHATSAPP_URL}" target="_blank" rel="noopener">💬 Ouvrir la discussion</a>
                 `;
                 container.appendChild(waCard);
             }
@@ -1226,7 +1250,7 @@
                 dice: `<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>`,
                 clock: `<circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 15 14"/>`
             };
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;">${paths[name] || ""}</svg>`;
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;">${paths[name] || ""}</svg>`;
         }
 
         function getCurrentPersonKey() {
@@ -1299,7 +1323,7 @@
                 <path d="M2.3 10.5a9.7 9.7 0 0 1 19.4 0c-2.5-1.6-5.6-2.4-9.7-2.4s-7.2 0.8-9.7 2.4Z" fill="#7a4a2b"/>
                 <circle cx="8.3" cy="12.5" r="1.4" fill="#33261c"/>
                 <circle cx="15.7" cy="12.5" r="1.4" fill="#33261c"/>
-                <path d="M8 17q4 3 8 0" stroke="#33261c" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                <path d="M8 17q4 3 8 0" stroke="#33261c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
             </svg>`;
         }
 
