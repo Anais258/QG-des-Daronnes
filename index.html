@@ -11,6 +11,7 @@
         :root {
             --bg: #f7f6f4;
             --card-bg: #ffffff;
+            --avatar-card-bg: #ffffff;
             --text: #080808;
             --primary: #ff5e3a;
             --border: #dfe4ea;
@@ -19,6 +20,7 @@
         [data-theme="dark"] {
             --bg: #1e1e24;
             --card-bg: #2d2d38;
+            --avatar-card-bg: #1e1e24;
             --text: #f1f2f6;
             --primary: #ff9142;
             --border: #3f3f4e;
@@ -27,6 +29,18 @@
 
         * , *::before, *::after {
             box-sizing: border-box;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
         body {
@@ -56,7 +70,7 @@
             margin-top: 20px;
         }
         .avatar-card {
-            background: var(--bg);
+            background: var(--avatar-card-bg);
             border: 2px solid var(--border);
             padding: 16px;
             border-radius: 12px;
@@ -176,6 +190,7 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
+            margin: 0;
         }
         .top-bar-title-text {
             white-space: nowrap;
@@ -308,6 +323,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-family: inherit;
         }
         button:hover {
             background: var(--primary);
@@ -675,7 +691,7 @@
         }
 
         /* Titres : Fraunces (chaleureux + sérieux), reste en Inter */
-        #login-screen h2,
+        #login-screen h1,
         .top-bar-title,
         .home-greeting span,
         .overview-title,
@@ -724,32 +740,40 @@
             background: var(--primary);
             opacity: 0.9;
         }
+
+        .overview-row:focus-visible,
+        .calendar-day.has-event:focus-visible,
+        .avatar-card:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body data-theme="light">
 
     <div id="login-screen">
-        <h2>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align:-4px; margin-right:4px;">
+        <h1>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align:-4px; margin-right:4px;" aria-hidden="true">
                 <path d="M4 11.5 12 4l8 7.5"/>
                 <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/>
             </svg>
             Le QG des Daronnes
-        </h2>
+        </h1>
         <p style="margin: 16px 0 24px; line-height: 1.6;">Qui se connecte aujourd'hui ?</p>
         <div class="avatar-grid" id="avatar-grid"></div>
     </div>
-    <img src="images/logo-qgd.png" alt="QGD" style="display:block; width: min(390px, 112%); margin: 18px auto 0; transform: rotate(-4deg);">
+    <img id="qgd-logo" src="logo-qgd.png" alt="QGD" style="display:block; width: min(390px, 112%); margin: 18px auto 0; transform: rotate(-4deg);">
 
     <!-- Pop-up de saisie du code PIN -->
     <div id="pin-overlay" class="pin-overlay" onclick="closePinModal()"></div>
-    <div id="pin-modal" class="pin-modal">
+    <div id="pin-modal" class="pin-modal" role="dialog" aria-modal="true" aria-labelledby="pin-title">
         <div class="pin-avatar-wrap">
-            <svg id="pin-avatar-icon" class="avatar-icon" viewBox="0 0 48 48"></svg>
+            <svg id="pin-avatar-icon" class="avatar-icon" viewBox="0 0 48 48" aria-hidden="true"></svg>
         </div>
-        <div class="pin-title">Code PIN</div>
-        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-input" class="pin-input" autocomplete="off" onkeydown="if(event.key==='Enter') submitPin();">
-        <div class="pin-error" id="pin-error"></div>
+        <div class="pin-title" id="pin-title">Code PIN</div>
+        <label for="pin-input" class="sr-only">Code PIN</label>
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-input" class="pin-input" autocomplete="off" aria-describedby="pin-error" onkeydown="if(event.key==='Enter') submitPin();">
+        <div class="pin-error" id="pin-error" role="alert"></div>
         <div class="pin-actions">
             <button onclick="closePinModal()">Annuler</button>
             <button class="btn-orange" onclick="submitPin()">Valider</button>
@@ -758,24 +782,24 @@
 
     <div id="app-screen">
         <div class="top-bar">
-            <button onclick="toggleMenu()" title="Menu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="18" height="18">
+            <button onclick="toggleMenu()" id="menu-toggle-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-drawer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="18" height="18" aria-hidden="true">
                     <line x1="4" y1="7" x2="20" y2="7"/>
                     <line x1="4" y1="12" x2="20" y2="12"/>
                     <line x1="4" y1="17" x2="20" y2="17"/>
                 </svg>
             </button>
-            <span class="top-bar-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="flex-shrink:0;">
+            <h1 class="top-bar-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="flex-shrink:0;" aria-hidden="true">
                     <path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/>
                     <line x1="12" y1="12" x2="12" y2="19"/>
                     <line x1="8" y1="21" x2="16" y2="21"/>
                 </svg>
                 <span class="top-bar-title-text">Le QG des Daronnes</span>
-            </span>
-            <button id="theme-toggle-btn" onclick="toggleTheme()" title="Mode Sombre">
+            </h1>
+            <button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="Passer en mode sombre">
                 <span class="theme-icon">
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="4"/>
                         <line x1="12" y1="2" x2="12" y2="4"/>
                         <line x1="12" y1="20" x2="12" y2="22"/>
@@ -786,7 +810,7 @@
                         <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/>
                         <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
                     </svg>
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/>
                     </svg>
                 </span>
@@ -798,26 +822,26 @@
 
     <!-- Menu latéral -->
     <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
-    <div id="menu-drawer" class="menu-drawer">
+    <div id="menu-drawer" class="menu-drawer" role="dialog" aria-modal="true" aria-labelledby="menu-user-name">
         <div class="menu-header">
-            <svg id="menu-avatar-icon" class="avatar-icon" viewBox="0 0 48 48"></svg>
+            <svg id="menu-avatar-icon" class="avatar-icon" viewBox="0 0 48 48" aria-hidden="true"></svg>
             <span id="menu-user-name">Connectée : —</span>
         </div>
         <button class="menu-item" id="menu-refresh-btn" onclick="manualRefresh()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
                 <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
                 <path d="M20 4v5h-5"/>
             </svg>
-            <span>Actualiser le planning</span>
+            <span aria-live="polite">Actualiser le planning</span>
         </button>
         <a class="menu-item" id="menu-whatsapp-link" href="#" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
             </svg>
             <span>Groupe WhatsApp</span>
         </a>
         <button class="menu-item" onclick="logout()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
                 <line x1="21" y1="12" x2="9" y2="12"/>
@@ -891,7 +915,7 @@
             { display: "Anaïs",        short: "Anaïs",    key: "anais",       column: "Anais",       pin: "1111", color: "#26de81" },
             { display: "Anne-Sophie",  short: "Anne-So",  key: "anneSophie",  column: "AnneSophie",  pin: "2222", color: "#a55eea" },
             { display: "Céline",       short: "Céline",   key: "celine",      column: "Celine",      pin: "3333", color: "#ff6b81" },
-            { display: "Sonia",        short: "Sonia",    key: "sonia",       column: "Sonia",       pin: "4444", color: "#feca57" }
+            { display: "Sonia",        short: "Sonia",    key: "sonia",       column: "Sonia",       pin: "4444", color: "#378add" }
         ];
 
         // ==========================================================
@@ -914,11 +938,13 @@
             const grid = document.getElementById("avatar-grid");
             grid.innerHTML = "";
             PEOPLE.forEach(p => {
-                const div = document.createElement("div");
+                const div = document.createElement("button");
+                div.type = "button";
                 div.className = "avatar-card";
+                div.setAttribute("aria-label", `Se connecter en tant que ${p.display}`);
                 div.style.setProperty("--avatar-color", p.color);
                 div.innerHTML = `
-                    <svg class="avatar-icon" viewBox="0 0 48 48">${avatarSvgInner(p)}</svg>
+                    <svg class="avatar-icon" viewBox="0 0 48 48" aria-hidden="true">${avatarSvgInner(p)}</svg>
                     <span>${p.display}</span>
                 `;
                 div.onclick = () => attemptLogin(p);
@@ -931,8 +957,11 @@
             });
         }
 
+        let pinTriggerEl = null;
+
         function attemptLogin(person) {
             pendingPinPerson = person;
+            pinTriggerEl = document.activeElement;
             document.getElementById("pin-avatar-icon").innerHTML = avatarSvgInner(person);
             document.getElementById("pin-input").value = "";
             document.getElementById("pin-error").textContent = "";
@@ -945,6 +974,10 @@
             document.getElementById("pin-overlay").classList.remove("open");
             document.getElementById("pin-modal").classList.remove("open");
             pendingPinPerson = null;
+            if (pinTriggerEl) {
+                pinTriggerEl.focus();
+                pinTriggerEl = null;
+            }
         }
 
         function submitPin() {
@@ -964,6 +997,7 @@
         function login(user) {
             currentUser = user;
             document.getElementById("login-screen").style.display = "none";
+            document.getElementById("qgd-logo").style.display = "none";
             document.getElementById("app-screen").style.display = "block";
 
             // Remplit le menu latéral avec le nom + l'avatar de la personne connectée
@@ -992,16 +1026,34 @@
             document.getElementById("bottom-nav").style.display = "none";
             document.getElementById("app-screen").style.display = "none";
             document.getElementById("login-screen").style.display = "block";
+            document.getElementById("qgd-logo").style.display = "block";
         }
 
         function toggleMenu() {
-            document.getElementById("menu-overlay").classList.toggle("open");
-            document.getElementById("menu-drawer").classList.toggle("open");
+            const overlay = document.getElementById("menu-overlay");
+            const drawer = document.getElementById("menu-drawer");
+            const btn = document.getElementById("menu-toggle-btn");
+            const opening = !drawer.classList.contains("open");
+            overlay.classList.toggle("open");
+            drawer.classList.toggle("open");
+            btn.setAttribute("aria-expanded", opening ? "true" : "false");
+            btn.setAttribute("aria-label", opening ? "Fermer le menu" : "Ouvrir le menu");
+            if (opening) {
+                const firstFocusable = drawer.querySelector("button, a[href]");
+                if (firstFocusable) firstFocusable.focus();
+            } else {
+                btn.focus();
+            }
         }
 
         function closeMenu() {
+            const wasOpen = document.getElementById("menu-drawer").classList.contains("open");
             document.getElementById("menu-overlay").classList.remove("open");
             document.getElementById("menu-drawer").classList.remove("open");
+            const btn = document.getElementById("menu-toggle-btn");
+            btn.setAttribute("aria-expanded", "false");
+            btn.setAttribute("aria-label", "Ouvrir le menu");
+            if (wasOpen) btn.focus();
         }
 
         // Retourne le contenu interne (sans la balise <svg>) d'un visage avatar,
@@ -1020,9 +1072,11 @@
 
         function toggleTheme() {
             const body = document.body;
-            body.setAttribute("data-theme", body.getAttribute("data-theme") === "light" ? "dark" : "light");
+            const isDark = body.getAttribute("data-theme") === "light";
+            body.setAttribute("data-theme", isDark ? "dark" : "light");
 
             const btn = document.getElementById("theme-toggle-btn");
+            btn.setAttribute("aria-label", isDark ? "Passer en mode clair" : "Passer en mode sombre");
             btn.classList.remove("spin");
             void btn.offsetWidth; // force le redémarrage de l'animation
             btn.classList.add("spin");
@@ -1030,9 +1084,13 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById("nav-accueil").classList.toggle("active-nav", tab === "accueil");
-            document.getElementById("nav-liste").classList.toggle("active-nav", tab === "liste");
-            document.getElementById("nav-idee").classList.toggle("active-nav", tab === "idee");
+            ["accueil", "liste", "idee"].forEach(t => {
+                const btn = document.getElementById("nav-" + t);
+                const isActive = t === tab;
+                btn.classList.toggle("active-nav", isActive);
+                if (isActive) btn.setAttribute("aria-current", "page");
+                else btn.removeAttribute("aria-current");
+            });
             renderApp();
         }
 
@@ -1068,8 +1126,8 @@
             const container = document.getElementById("content-container");
             if (planningData.length === 0) {
                 container.innerHTML = `
-                    <div class="loading-wrap">
-                        <div class="loading-spinner"></div>
+                    <div class="loading-wrap" role="status" aria-live="polite">
+                        <div class="loading-spinner" aria-hidden="true"></div>
                         <div class="loading-text">Chargement du planning...</div>
                     </div>
                 `;
@@ -1098,7 +1156,7 @@
                 }
                 renderApp();
             } catch (error) {
-                container.innerHTML = "<p style='text-align:center; color:red;'>Erreur de chargement du planning.</p>";
+                container.innerHTML = "<p role='alert' style='text-align:center; color:#e24b4a;'>Erreur de chargement du planning.</p>";
             }
         }
 
@@ -1203,14 +1261,23 @@
                 }
                 const row = document.createElement("div");
                 row.className = "overview-row";
+                row.setAttribute("role", "button");
+                row.setAttribute("tabindex", "0");
+                row.setAttribute("aria-label", `${label} : Dispo ${names}`);
                 row.innerHTML = `
                     <div>
                         <div class="day-name">${label}</div>
                         <div class="day-people">Dispo : ${names}</div>
                     </div>
-                    <span class="chevron">›</span>
+                    <span class="chevron" aria-hidden="true">›</span>
                 `;
                 row.onclick = () => goToDate(match, label);
+                row.onkeydown = (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        goToDate(match, label);
+                    }
+                };
                 target.appendChild(row);
             });
         }
@@ -1313,8 +1380,8 @@
             const controls = document.createElement("div");
             controls.className = "controls";
             controls.innerHTML = `
-                <button id="btn-view-list" onclick="switchView('list')">${icon("list", 16)} Vue Liste</button>
-                <button id="btn-view-calendar" onclick="switchView('calendar')">${icon("calendar", 16)} Vue Calendrier Mensuel</button>
+                <button id="btn-view-list" onclick="switchView('list')" aria-pressed="${currentView === 'list'}">${icon("list", 16)} Vue Liste</button>
+                <button id="btn-view-calendar" onclick="switchView('calendar')" aria-pressed="${currentView === 'calendar'}">${icon("calendar", 16)} Vue Calendrier Mensuel</button>
             `;
             container.appendChild(controls);
             controls.querySelector("#btn-view-list").classList.toggle("active-view", currentView === "list");
@@ -1323,7 +1390,10 @@
             if (currentView === "list") {
                 const searchWrap = document.createElement("div");
                 const safeQuery = listSearchQuery.replace(/"/g, "&quot;");
-                searchWrap.innerHTML = `<input type="text" id="list-search" class="search-input" placeholder="Rechercher (ex: vendredi, 15/08)" value="${safeQuery}">`;
+                searchWrap.innerHTML = `
+                    <label for="list-search" class="sr-only">Rechercher une date dans la liste</label>
+                    <input type="text" id="list-search" class="search-input" placeholder="Rechercher (ex: vendredi, 15/08)" value="${safeQuery}">
+                `;
                 container.appendChild(searchWrap);
                 searchWrap.querySelector("#list-search").oninput = (e) => {
                     listSearchQuery = e.target.value;
@@ -1332,7 +1402,10 @@
                 };
             } else {
                 const searchWrap = document.createElement("div");
-                searchWrap.innerHTML = `<input type="text" id="calendar-search" class="search-input" placeholder="Rechercher une date (ex: vendredi, 15/08) puis Entrée">`;
+                searchWrap.innerHTML = `
+                    <label for="calendar-search" class="sr-only">Rechercher une date dans le calendrier</label>
+                    <input type="text" id="calendar-search" class="search-input" placeholder="Rechercher une date (ex: vendredi, 15/08) puis Entrée">
+                `;
                 container.appendChild(searchWrap);
                 searchWrap.querySelector("#calendar-search").onkeydown = (e) => {
                     if (e.key !== "Enter") return;
@@ -1439,7 +1512,7 @@
                 dice: `<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>`,
                 clock: `<circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 15 14"/>`
             };
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;">${paths[name] || ""}</svg>`;
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;" aria-hidden="true">${paths[name] || ""}</svg>`;
         }
 
         function getCurrentPersonKey() {
@@ -1480,14 +1553,20 @@
                 <div class="participants-row">
                     ${PEOPLE.map(p => {
                         const isMine = p.key === myKey;
+                        const rawState = item[p.key] || "";
+                        const stateLabel = rawState.trim() === "" ? "pas encore répondu"
+                            : rawState.includes("enfants") ? "disponible avec enfants"
+                            : rawState.includes("Dispo") ? "disponible"
+                            : "indisponible";
                         return `
                         <div class="participant-badge">
                             <span>${p.short}</span>
                             <button class="round-btn ${getStateClass(item[p.key])}"
+                                    aria-label="${p.display} : ${stateLabel}${isMine ? ', appuyer pour changer' : ''}"
                                     ${isMine
                                         ? `onclick="changeStatus(${index}, '${p.key}')"`
                                         : `disabled title="Seule ${p.display} peut modifier son statut"`}>
-                                ${getShortState(item[p.key])}
+                                <span aria-hidden="true">${getShortState(item[p.key])}</span>
                             </button>
                         </div>
                     `;
@@ -1634,10 +1713,22 @@
 
                 const cell = document.createElement("div");
                 cell.className = "calendar-day" + (matchIndex !== -1 ? " has-event" : "");
-                cell.innerHTML = `<span>${day}</span>`;
+                cell.innerHTML = `<span aria-hidden="true">${day}</span>`;
                 if (matchIndex !== -1) {
-                    cell.innerHTML += `<span class="dot" style="background:${dotColorForItem(planningData[matchIndex])}"></span>`;
+                    cell.innerHTML += `<span class="dot" aria-hidden="true" style="background:${dotColorForItem(planningData[matchIndex])}"></span>`;
+                    cell.setAttribute("role", "button");
+                    cell.setAttribute("tabindex", "0");
+                    const statusText = computeGlobalStatus(planningData[matchIndex]).text;
+                    cell.setAttribute("aria-label", `${day} ${monthNames[calMonth]} : ${statusText}`);
                     cell.onclick = () => showDayDetail(matchIndex);
+                    cell.onkeydown = (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            showDayDetail(matchIndex);
+                        }
+                    };
+                } else {
+                    cell.setAttribute("aria-hidden", "true");
                 }
                 grid.appendChild(cell);
             }
@@ -1677,6 +1768,15 @@
             const btn = document.getElementById("scroll-top-btn");
             if (!btn) return;
             btn.style.display = window.scrollY > 300 ? "flex" : "none";
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            if (document.getElementById("pin-modal").classList.contains("open")) {
+                closePinModal();
+            } else if (document.getElementById("menu-drawer").classList.contains("open")) {
+                closeMenu();
+            }
         });
 
         // ==========================================================
