@@ -462,7 +462,7 @@
         /* Page d'accueil */
         .home-banner {
             position: relative;
-            width: 350px;
+            width: 300px;
             height: 200px;
             max-width: 100%;
             border-radius: 16px;
@@ -596,6 +596,84 @@
             text-align: center;
         }
 
+        /* Pop-up de saisie du code PIN */
+        .pin-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 30;
+        }
+        .pin-overlay.open { display: block; }
+        .pin-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(280px, 85vw);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 16px 32px var(--shadow);
+            z-index: 31;
+            text-align: center;
+        }
+        .pin-modal.open { display: block; }
+        .pin-avatar-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .pin-avatar-wrap .avatar-icon {
+            width: 56px;
+            height: 56px;
+            animation: none;
+        }
+        .pin-title {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 18px;
+        }
+        .pin-input {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 1.6rem;
+            letter-spacing: 0.5em;
+            padding: 10px 0 10px 0.5em;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .pin-error {
+            color: #e24b4a;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-height: 1.2em;
+            margin-bottom: 8px;
+        }
+        .pin-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .pin-actions button {
+            flex: 1;
+        }
+        .pin-actions .btn-orange {
+            margin-top: 0;
+        }
+
         /* Titres : Fraunces (chaleureux + sérieux), reste en Inter */
         #login-screen h2,
         .top-bar-title,
@@ -662,6 +740,21 @@
         <div class="avatar-grid" id="avatar-grid"></div>
     </div>
     <img src="images/logo-qgd.png" alt="QGD" style="display:block; width: min(390px, 112%); margin: 18px auto 0; transform: rotate(-4deg);">
+
+    <!-- Pop-up de saisie du code PIN -->
+    <div id="pin-overlay" class="pin-overlay" onclick="closePinModal()"></div>
+    <div id="pin-modal" class="pin-modal">
+        <div class="pin-avatar-wrap">
+            <svg id="pin-avatar-icon" class="avatar-icon" viewBox="0 0 48 48"></svg>
+        </div>
+        <div class="pin-title">Code PIN</div>
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-input" class="pin-input" autocomplete="off" onkeydown="if(event.key==='Enter') submitPin();">
+        <div class="pin-error" id="pin-error"></div>
+        <div class="pin-actions">
+            <button onclick="closePinModal()">Annuler</button>
+            <button class="btn-orange" onclick="submitPin()">Valider</button>
+        </div>
+    </div>
 
     <div id="app-screen">
         <div class="top-bar">
@@ -789,7 +882,7 @@
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
         // (ex: "images/banniere.jpg" si tu ajoutes le fichier dans ton repo GitHub).
         // Laisse vide "" pour un dégradé de couleur à la place.
-        const HOME_BANNER_URL = "https://picsum.photos/350/200";
+        const HOME_BANNER_URL = "https://picsum.photos/300/200";
 
         // 💬 Lien vers le groupe WhatsApp (menu + page d'accueil)
         const WHATSAPP_URL = "https://chat.whatsapp.com/Gb2c0ayE9v9DhASPU4MQsb";
@@ -812,6 +905,7 @@
         let calMonth = new Date().getMonth(); // 0-11
         let listSearchQuery = "";
         let listVisibleCount = 20;
+        let pendingPinPerson = null;
 
         // ==========================================================
         // LOGIN / LOGOUT
@@ -838,12 +932,32 @@
         }
 
         function attemptLogin(person) {
-            const pin = prompt(`Code PIN de ${person.display} :`);
-            if (pin === null) return; // annulé
-            if (pin.trim() === person.pin) {
+            pendingPinPerson = person;
+            document.getElementById("pin-avatar-icon").innerHTML = avatarSvgInner(person);
+            document.getElementById("pin-input").value = "";
+            document.getElementById("pin-error").textContent = "";
+            document.getElementById("pin-overlay").classList.add("open");
+            document.getElementById("pin-modal").classList.add("open");
+            setTimeout(() => document.getElementById("pin-input").focus(), 50);
+        }
+
+        function closePinModal() {
+            document.getElementById("pin-overlay").classList.remove("open");
+            document.getElementById("pin-modal").classList.remove("open");
+            pendingPinPerson = null;
+        }
+
+        function submitPin() {
+            if (!pendingPinPerson) return;
+            const input = document.getElementById("pin-input");
+            if (input.value.trim() === pendingPinPerson.pin) {
+                const person = pendingPinPerson;
+                closePinModal();
                 login(person.display);
             } else {
-                alert("Code PIN incorrect.");
+                document.getElementById("pin-error").textContent = "Code incorrect, réessaie.";
+                input.value = "";
+                input.focus();
             }
         }
 
