@@ -607,12 +607,12 @@
             height: 90px;
         }
         .pour-anim .bottle-group {
-            transform-origin: 30px 78px;
+            transform-origin: 20px 72px;
             animation: bottle-tilt 2.4s ease-in-out infinite;
         }
         @keyframes bottle-tilt {
-            0%, 100% { transform: rotate(-28deg); }
-            50% { transform: rotate(-33deg); }
+            0%, 100% { transform: rotate(26deg); }
+            50% { transform: rotate(31deg); }
         }
         .pour-anim .droplet {
             opacity: 0;
@@ -623,20 +623,22 @@
         @keyframes droplet-fall {
             0% { opacity: 0; transform: translate(0, 0); }
             15% { opacity: 1; }
-            85% { opacity: 1; transform: translate(4px, 22px); }
-            100% { opacity: 0; transform: translate(5px, 25px); }
+            85% { opacity: 1; transform: translate(11px, 22px); }
+            100% { opacity: 0; transform: translate(13px, 25px); }
         }
         .pour-anim .liquid-fill {
             transform: scaleY(0);
+            opacity: 0;
             transform-box: fill-box;
             transform-origin: bottom;
-            animation: liquid-rise 2.4s ease-in-out infinite;
+            animation: liquid-rise 2.4s ease-out infinite;
         }
         @keyframes liquid-rise {
-            0% { transform: scaleY(0); }
-            55% { transform: scaleY(1); }
-            85% { transform: scaleY(1); }
-            100% { transform: scaleY(0); }
+            0% { transform: scaleY(0); opacity: 0; }
+            8% { opacity: 1; }
+            60% { transform: scaleY(1); opacity: 1; }
+            80% { transform: scaleY(1); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 0; }
         }
         .loading-text {
             font-family: 'Fraunces', serif;
@@ -1219,13 +1221,13 @@
                                 <path d="M50 48 L76 48 L68 84 L58 84 Z"/>
                             </clipPath>
                             <rect class="liquid-fill" x="50" y="48" width="26" height="36" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
-                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
-                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
-                            <circle class="droplet" cx="44" cy="36" r="2" fill="var(--primary)"/>
+                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
+                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
+                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
                             <g class="bottle-group">
-                                <rect x="10" y="34" width="22" height="38" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/>
-                                <rect x="17" y="18" width="8" height="18" fill="none" stroke="currentColor" stroke-width="2.2"/>
-                                <rect x="15" y="13" width="12" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <rect x="10" y="40" width="20" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <rect x="15" y="22" width="10" height="18" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <rect x="13" y="17" width="14" height="5" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>
                             </g>
                         </svg>
                         <div class="loading-text">Chargement du planning...</div>
@@ -1327,7 +1329,7 @@
                 waCard.style.textAlign = "center";
                 waCard.innerHTML = `
                     <div class="overview-label">GROUPE WHATSAPP</div>
-                    <a class="whatsapp-link btn-orange" href="${WHATSAPP_URL}" target="_blank" rel="noopener">💬 Ouvrir la discussion</a>
+                    <a class="whatsapp-link" href="${WHATSAPP_URL}" target="_blank" rel="noopener">💬 Ouvrir la discussion</a>
                 `;
                 container.appendChild(waCard);
             }
