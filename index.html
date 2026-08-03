@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le QG des Daronnes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f7f6f4;
@@ -23,7 +26,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -289,6 +292,8 @@
             border-color: var(--primary);
         }
 
+        /* espace réservé aux vues */
+
         /* Cartes de soirées */
         .card {
             background: var(--card-bg);
@@ -317,10 +322,12 @@
             font-size: 0.8rem;
             padding: 4px 8px;
             border-radius: 20px;
-            background: #eccc68;
-            color: #2f3542;
             font-weight: bold;
         }
+        .status-blocked { background: #ffd9d9; color: #a32d2d; }
+        .status-pending { background: var(--border); color: var(--text); opacity: 0.8; }
+        .status-free-kids { background: #d6ecff; color: #185fa5; }
+        .status-free { background: #d7f5e3; color: #0f6e56; }
 
         /* Boutons ronds des participantes */
         .participants-row {
@@ -503,12 +510,27 @@
             text-decoration: none;
             padding: 10px;
         }
+
+        /* Titres : Fraunces (chaleureux + sérieux), reste en Quicksand */
+        #login-screen h2,
+        .top-bar-title,
+        .home-greeting span,
+        .overview-title,
+        .calendar-nav span {
+            font-family: 'Fraunces', serif;
+        }
     </style>
 </head>
 <body data-theme="light">
 
     <div id="login-screen">
-        <h2>🏠 Le QG des Daronnes</h2>
+        <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" style="vertical-align:-4px; margin-right:4px;">
+                <path d="M4 11.5 12 4l8 7.5"/>
+                <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/>
+            </svg>
+            Le QG des Daronnes
+        </h2>
         <p>Qui se connecte aujourd'hui ?</p>
         <div class="avatar-grid" id="avatar-grid"></div>
     </div>
@@ -516,7 +538,14 @@
     <div id="app-screen">
         <div class="top-bar">
             <button onclick="toggleMenu()" title="Menu">☰</button>
-            <span class="top-bar-title">🍷 Le QG des Daronnes</span>
+            <span class="top-bar-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-3px; margin-right:2px;">
+                    <path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/>
+                    <line x1="12" y1="12" x2="12" y2="19"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                </svg>
+                Le QG des Daronnes
+            </span>
             <button id="theme-toggle-btn" onclick="toggleTheme()" title="Mode Sombre">
                 <span class="theme-icon">
                     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -612,6 +641,7 @@
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRiOoyEA46xpeZ9xwlTLiK7SYF8Lpj11-HUGFFHwi7mW9YH8eIqjDmGgyVqmEqz2JIXnYlLnGG6uMxe/pub?gid=0&single=true&output=csv";
 
         // ⚠️ A REMPLACER : URL du déploiement Apps Script (se termine par /exec)
+        // Déploie Code.gs en Application Web puis colle l'URL ici.
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyI9Ecs6VduY3bRyYf4wUuAiid0RD6mPZCcy-K6snSqtrQ6Vlf-1prrB_kKE8Z3ps/exec";
 
         // 🖼️ Bannière de la page d'accueil : mets ici le chemin/URL de la photo
@@ -847,7 +877,7 @@
             overviewCard.className = "card";
             overviewCard.innerHTML = `
                 <div class="overview-label">VUE D'ENSEMBLE</div>
-                <div class="overview-title">📅 Nos dispos ce week-end</div>
+                <div class="overview-title">${icon("calendar")} Nos dispos ce week-end</div>
                 <div id="overview-rows"></div>
             `;
             container.appendChild(overviewCard);
@@ -950,12 +980,12 @@
 
             if (found) {
                 return `
-                    <div class="label">🌙 Prochaine soirée où tout le monde est dispo</div>
+                    <div class="label">${icon("moon")} Prochaine soirée où tout le monde est dispo</div>
                     <div class="value">${found.item.jour} ${found.item.date}</div>
                 `;
             }
             return `
-                <div class="label">😅 Pas encore de date en commun</div>
+                <div class="label">${icon("clock")} Pas encore de date en commun</div>
                 <div class="value">Continuez à mettre vos dispos à jour !</div>
             `;
         }
@@ -978,10 +1008,10 @@
             card.className = "card";
             card.style.textAlign = "center";
             card.innerHTML = `
-                <div class="overview-title">🎲 Besoin d'inspiration ?</div>
+                <div class="overview-title">${icon("dice")} Besoin d'inspiration ?</div>
                 <p style="opacity:0.75;">Laisse le hasard choisir votre prochaine soirée !</p>
                 <div id="idee-result" style="font-size:1.3rem; font-weight:bold; margin:20px 0; min-height:1.6em;">?</div>
-                <button onclick="tirerIdee()">🎲 Tirer une idée</button>
+                <button onclick="tirerIdee()">${icon("dice", 16)} Tirer une idée</button>
             `;
             container.appendChild(card);
         }
@@ -1001,8 +1031,8 @@
             const controls = document.createElement("div");
             controls.className = "controls";
             controls.innerHTML = `
-                <button id="btn-view-list" onclick="switchView('list')">📋 Vue Liste</button>
-                <button id="btn-view-calendar" onclick="switchView('calendar')">📅 Vue Calendrier Mensuel</button>
+                <button id="btn-view-list" onclick="switchView('list')">${icon("list", 16)} Vue Liste</button>
+                <button id="btn-view-calendar" onclick="switchView('calendar')">${icon("calendar", 16)} Vue Calendrier Mensuel</button>
             `;
             container.appendChild(controls);
             controls.querySelector("#btn-view-list").classList.toggle("active-view", currentView === "list");
@@ -1040,9 +1070,40 @@
             }, 1000);
         }
 
+        // Icônes SVG en contour réutilisables (même style que les avatars/nav)
+        function icon(name, size = 18) {
+            const paths = {
+                moon: `<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/>`,
+                calendar: `<rect x="4" y="5" width="16" height="15" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>`,
+                list: `<circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="12" x2="20" y2="12"/><circle cx="5" cy="18" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="18" x2="20" y2="18"/>`,
+                dice: `<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>`,
+                clock: `<circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 15 14"/>`
+            };
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;">${paths[name] || ""}</svg>`;
+        }
+
         function getCurrentPersonKey() {
             const person = PEOPLE.find(p => p.display === currentUser);
             return person ? person.key : null;
+        }
+
+        // Calcule le statut global à partir des 4 statuts (indépendant de la
+        // colonne "Analyse" du Sheet, pour garder la main sur le texte affiché).
+        function computeGlobalStatus(item) {
+            const statuses = PEOPLE.map(p => (item[p.key] || "").trim());
+            const hasIndispo = statuses.some(s => s !== "" && !s.includes("Dispo"));
+            if (hasIndispo) {
+                return { text: "Pas toutes dispo", cls: "status-blocked" };
+            }
+            const hasPending = statuses.some(s => s === "");
+            if (hasPending) {
+                return { text: "En attente de réponses", cls: "status-pending" };
+            }
+            const hasEnfants = statuses.some(s => s.includes("enfants") || s.includes("👶"));
+            if (hasEnfants) {
+                return { text: "Libre avec enfants", cls: "status-free-kids" };
+            }
+            return { text: "Tout le monde est libre !", cls: "status-free" };
         }
 
         function buildCard(item, index) {
@@ -1050,10 +1111,11 @@
             card.className = "card";
             card.dataset.row = item.sheetRow;
             const myKey = getCurrentPersonKey();
+            const globalStatus = computeGlobalStatus(item);
             card.innerHTML = `
                 <div class="date-header">
-                    <span>🌙 Soirée du ${item.jour} ${item.date}</span>
-                    <span class="status-global">${item.analyse}</span>
+                    <span>${icon("moon")} Soirée du ${item.jour} ${item.date}</span>
+                    <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
                 </div>
                 <div class="participants-row">
                     ${PEOPLE.map(p => {
@@ -1083,10 +1145,21 @@
             return "state-indispo";
         }
 
+        // Icône dédiée : visage d'enfant (pas un bébé), teinte de peau claire légèrement hâlée
+        function childIcon(size = 18) {
+            return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="vertical-align:-4px;">
+                <circle cx="12" cy="13.5" r="7" fill="#f2c299"/>
+                <path d="M5 11a7 7 0 0 1 14 0c-1.8-1.1-4-1.7-7-1.7S6.8 9.9 5 11Z" fill="#7a4a2b"/>
+                <circle cx="9.2" cy="13.5" r="1" fill="#33261c"/>
+                <circle cx="14.8" cy="13.5" r="1" fill="#33261c"/>
+                <path d="M9 17q3 2.2 6 0" stroke="#33261c" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+            </svg>`;
+        }
+
         function getShortState(state) {
             state = state || "";
             if (state.trim() === "") return "?";
-            if (state.includes("enfants") || state.includes("👶")) return "👶";
+            if (state.includes("enfants") || state.includes("👶")) return childIcon(18);
             if (state.includes("Dispo")) return "✓";
             return "✕";
         }
@@ -1211,10 +1284,14 @@
         }
 
         function dotColorForItem(item) {
-            const nbDispo = PEOPLE.filter(p => (item[p.key] || "").includes("Dispo")).length;
-            if (nbDispo === PEOPLE.length) return "#2ed573";
-            if (nbDispo === 0) return "#ff4757";
-            return "#eccc68";
+            const status = computeGlobalStatus(item);
+            const colors = {
+                "status-blocked": "#e24b4a",
+                "status-pending": "#b4b2a9",
+                "status-free-kids": "#378add",
+                "status-free": "#2ed573"
+            };
+            return colors[status.cls] || "#b4b2a9";
         }
 
         function showDayDetail(index) {
