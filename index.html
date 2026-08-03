@@ -797,7 +797,9 @@
         <p style="margin: 16px 0 24px; line-height: 1.6;">Qui se connecte aujourd'hui ?</p>
         <div class="avatar-grid" id="avatar-grid"></div>
     </div>
-    <img id="qgd-logo" src="logo-qgd.png" alt="QGD" style="display:block; width: min(390px, 112%); margin: 18px auto 0; transform: rotate(-4deg);">
+    <div id="qgd-logo" style="width: min(350px, 100%); height: 180px; margin: 18px auto 0; overflow: hidden; position: relative;">
+        <img src="logo-qgd.png" alt="QGD" style="position:absolute; top:50%; left:50%; width:115%; transform: translate(-50%, -50%) rotate(-4deg);">
+    </div>
 
     <!-- Pop-up de saisie du code PIN -->
     <div id="pin-overlay" class="pin-overlay" onclick="closePinModal()"></div>
@@ -1809,7 +1811,7 @@
         function getShortState(state) {
             state = state || "";
             if (state.trim() === "") return "?";
-            if (state.includes("enfants") || state.includes("👶")) return childIcon(32);
+            if (state.includes("enfants") || state.includes("👶")) return childIcon(26);
             if (state.includes("Dispo")) return "✓";
             return "✕";
         }
