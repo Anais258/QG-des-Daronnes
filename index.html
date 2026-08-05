@@ -389,6 +389,17 @@
             margin-top: 10px;
             gap: 8px;
         }
+        .slot-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
         .participant-badge {
             display: flex;
             flex-direction: column;
@@ -478,6 +489,14 @@
             height: 6px;
             border-radius: 50%;
             margin-top: 2px;
+        }
+        .calendar-day .dots-row {
+            display: flex;
+            gap: 3px;
+            margin-top: 2px;
+        }
+        .calendar-day .dots-row .dot {
+            margin-top: 0;
         }
         #calendar-day-detail {
             margin-top: 16px;
@@ -603,42 +622,45 @@
             padding: 70px 20px;
         }
         .pour-anim {
-            width: 90px;
-            height: 90px;
+            width: 150px;
+            height: 91px;
         }
         .pour-anim .bottle-group {
-            transform-origin: 20px 72px;
-            animation: bottle-tilt 2.4s ease-in-out infinite;
+            transform-origin: 143px 195px;
+            animation: bottle-tilt 6.5s ease-in-out infinite;
         }
         @keyframes bottle-tilt {
-            0%, 100% { transform: rotate(26deg); }
-            50% { transform: rotate(31deg); }
+            0%, 100% { transform: rotate(34deg); }
+            50% { transform: rotate(39deg); }
         }
         .pour-anim .droplet {
             opacity: 0;
-            animation: droplet-fall 1.2s ease-in infinite;
+            animation: droplet-fall 6.5s ease-in-out infinite;
         }
         .pour-anim .droplet:nth-child(2) { animation-delay: 0.3s; }
         .pour-anim .droplet:nth-child(3) { animation-delay: 0.6s; }
+        .pour-anim .droplet:nth-child(4) { animation-delay: 0.9s; }
+        .pour-anim .droplet:nth-child(5) { animation-delay: 1.2s; }
+        .pour-anim .droplet:nth-child(6) { animation-delay: 1.5s; }
+        .pour-anim .droplet:nth-child(7) { animation-delay: 1.8s; }
+        .pour-anim .droplet:nth-child(8) { animation-delay: 2.1s; }
+        .pour-anim .droplet:nth-child(9) { animation-delay: 2.4s; }
         @keyframes droplet-fall {
             0% { opacity: 0; transform: translate(0, 0); }
-            15% { opacity: 1; }
-            85% { opacity: 1; transform: translate(11px, 22px); }
-            100% { opacity: 0; transform: translate(13px, 25px); }
+            2.46% { opacity: 1; }
+            19.69% { opacity: 1; transform: translate(10px, 45px); }
+            24.6% { opacity: 0; transform: translate(11px, 47px); }
+            100% { opacity: 0; transform: translate(11px, 47px); }
         }
         .pour-anim .liquid-fill {
-            transform: scaleY(0);
-            opacity: 0;
-            transform-box: fill-box;
-            transform-origin: bottom;
-            animation: liquid-rise 2.4s ease-out infinite;
+            animation: liquid-rise 6.5s cubic-bezier(.45,0,.2,1) infinite;
         }
         @keyframes liquid-rise {
-            0% { transform: scaleY(0); opacity: 0; }
-            8% { opacity: 1; }
-            60% { transform: scaleY(1); opacity: 1; }
-            80% { transform: scaleY(1); opacity: 1; }
-            100% { transform: scaleY(1); opacity: 0; }
+            0% { height: 0; y: 182px; opacity: 0; }
+            0.5% { opacity: 1; }
+            61.538% { height: 26px; y: 156px; opacity: 1; }
+            92.308% { height: 26px; y: 156px; opacity: 1; }
+            100% { height: 26px; y: 156px; opacity: 0; }
         }
         .loading-text {
             font-family: 'Fraunces', serif;
@@ -724,6 +746,101 @@
         }
         .pin-actions .btn-orange {
             margin-top: 0;
+        }
+
+        /* Pop-up de confirmation de soirée (motif) */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 30;
+        }
+        .confirm-overlay.open { display: block; }
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(300px, 85vw);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 16px 32px var(--shadow);
+            z-index: 31;
+            text-align: center;
+        }
+        .confirm-modal.open { display: block; }
+        .confirm-modal .confirm-title {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 14px;
+        }
+        .confirm-modal input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .confirm-modal input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .confirm-actions button {
+            flex: 1;
+        }
+        .confirm-actions .btn-orange {
+            margin-top: 0;
+        }
+
+        /* Statut "soirée confirmée" */
+        .state-confirmed {
+            background: #378add;
+            color: #fff;
+            cursor: default;
+        }
+        .confirmed-banner {
+            background: #e6f1fb;
+            color: #0c447c;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .confirmed-banner button {
+            background: none;
+            border: none;
+            color: #0c447c;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .confirmed-banner button:hover {
+            background: none;
+            color: #0c447c;
+        }
+        .confirm-btn-wrap {
+            text-align: center;
+            margin-top: 12px;
         }
 
         /* Titres : Fraunces (chaleureux + sérieux), reste en Inter */
@@ -852,6 +969,21 @@
         <div class="pin-actions">
             <button onclick="closePinModal()">Annuler</button>
             <button class="btn-orange" onclick="submitPin()">Valider</button>
+        </div>
+    </div>
+
+    <!-- Pop-up de confirmation d'une soirée (motif) -->
+    <div id="confirm-overlay" class="confirm-overlay" onclick="closeConfirmModal()"></div>
+    <div id="confirm-modal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="confirm-title" id="confirm-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-4px; margin-right:4px;" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>
+            Confirmer cette soirée
+        </div>
+        <label for="confirm-input" class="sr-only">Motif de la soirée</label>
+        <input type="text" id="confirm-input" placeholder="Ex : anniversaire, juste pour se voir..." maxlength="60" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); submitConfirm();}">
+        <div class="confirm-actions">
+            <button onclick="closeConfirmModal()">Annuler</button>
+            <button class="btn-orange" onclick="submitConfirm()">Confirmer</button>
         </div>
     </div>
 
@@ -987,10 +1119,10 @@
         const WHATSAPP_URL = "https://chat.whatsapp.com/Gb2c0ayE9v9DhASPU4MQsb";
         // (protection simple entre vous, pas une vraie sécurité)
         const PEOPLE = [
-            { display: "Anaïs",        short: "Anaïs",    key: "anais",       column: "Anais",       pin: "1111", color: "#26de81" },
-            { display: "Anne-Sophie",  short: "Anne-So",  key: "anneSophie",  column: "AnneSophie",  pin: "2222", color: "#a55eea" },
-            { display: "Céline",       short: "Céline",   key: "celine",      column: "Celine",      pin: "3333", color: "#ff6b81" },
-            { display: "Sonia",        short: "Sonia",    key: "sonia",       column: "Sonia",       pin: "4444", color: "#feca57" }
+            { display: "Anaïs",        short: "Anaïs",    key: "anais",       column: "Anais",       columnJournee: "Anais_Journee",       pin: "1111", color: "#26de81" },
+            { display: "Anne-Sophie",  short: "Anne-So",  key: "anneSophie",  column: "AnneSophie",  columnJournee: "AnneSophie_Journee",  pin: "2222", color: "#a55eea" },
+            { display: "Céline",       short: "Céline",   key: "celine",      column: "Celine",      columnJournee: "Celine_Journee",      pin: "3333", color: "#ff6b81" },
+            { display: "Sonia",        short: "Sonia",    key: "sonia",       column: "Sonia",       columnJournee: "Sonia_Journee",       pin: "4444", color: "#feca57" }
         ];
 
         // ==========================================================
@@ -1070,6 +1202,70 @@
                 document.getElementById("pin-error").textContent = "Code incorrect, réessaie.";
                 input.value = "";
                 input.focus();
+            }
+        }
+
+        // ==========================================================
+        // SOIRÉE CONFIRMÉE
+        // ==========================================================
+        let pendingConfirmIndex = null;
+        let confirmTriggerEl = null;
+
+        function openConfirmModal(index) {
+            pendingConfirmIndex = index;
+            confirmTriggerEl = document.activeElement;
+            document.getElementById("confirm-input").value = "";
+            document.getElementById("confirm-overlay").classList.add("open");
+            document.getElementById("confirm-modal").classList.add("open");
+            setTimeout(() => document.getElementById("confirm-input").focus(), 50);
+        }
+
+        function closeConfirmModal() {
+            document.getElementById("confirm-overlay").classList.remove("open");
+            document.getElementById("confirm-modal").classList.remove("open");
+            pendingConfirmIndex = null;
+            const elToFocus = confirmTriggerEl;
+            confirmTriggerEl = null;
+            if (elToFocus) setTimeout(() => elToFocus.focus(), 0);
+        }
+
+        async function submitConfirm() {
+            if (pendingConfirmIndex === null) return;
+            const motif = document.getElementById("confirm-input").value.trim();
+            if (!motif) {
+                showToast("Ajoute un petit motif pour la soirée.", "warn");
+                return;
+            }
+            const index = pendingConfirmIndex;
+            closeConfirmModal();
+            await sendConfirmSoiree_(index, motif);
+        }
+
+        async function unconfirmSoiree(index) {
+            await sendConfirmSoiree_(index, "");
+        }
+
+        async function sendConfirmSoiree_(index, motif) {
+            const item = planningData[index];
+            // On efface d'abord toute autre soirée confirmée localement (une seule à la fois)
+            planningData.forEach(p => { p.confirmee = ""; });
+            item.confirmee = motif;
+            renderApp();
+
+            try {
+                const action = motif ? "confirmSoiree" : "unconfirmSoiree";
+                const url = `${APPS_SCRIPT_URL}?action=${action}&row=${item.sheetRow}&motif=${encodeURIComponent(motif)}`;
+                const resp = await fetch(url);
+                const result = await resp.json();
+                if (!result.success) {
+                    showToast("Erreur : " + (result.error || "inconnue"), "error");
+                    await loadPlanning();
+                } else if (motif) {
+                    showToast("Soirée confirmée !");
+                }
+            } catch (err) {
+                showToast("Erreur réseau, réessaie plus tard.", "error");
+                await loadPlanning();
             }
         }
 
@@ -1215,20 +1411,27 @@
             if (planningData.length === 0) {
                 container.innerHTML = `
                     <div class="loading-wrap" role="status" aria-live="polite">
-                        <svg class="pour-anim" viewBox="0 0 90 90" aria-hidden="true" style="color: var(--primary);">
-                            <path d="M50 48 L76 48 L68 84 L58 84 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                        <svg class="pour-anim" viewBox="0 0 380 230" aria-hidden="true" style="color: var(--primary);">
                             <clipPath id="pourGlassClip">
-                                <path d="M50 48 L76 48 L68 84 L58 84 Z"/>
+                                <path d="M248,150 C248,166 253,175 260,182 C267,175 272,166 272,150 Z"/>
                             </clipPath>
-                            <rect class="liquid-fill" x="50" y="48" width="26" height="36" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
-                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
-                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
-                            <circle class="droplet" cx="46" cy="24" r="2" fill="var(--primary)"/>
                             <g class="bottle-group">
-                                <rect x="10" y="40" width="20" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
-                                <rect x="15" y="22" width="10" height="18" fill="none" stroke="currentColor" stroke-width="2.2"/>
-                                <rect x="13" y="17" width="14" height="5" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>
+                                <path d="M143,190 L143,135 C143,118 151,107 158,101 L158,70 L172,70 L172,101 C179,107 187,118 187,135 L187,188 C187,192 184,195 180,195 L148,195 C144,195 143,193 143,190 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                                <rect x="155" y="59" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/>
                             </g>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
+                            <path d="M248,150 C248,166 253,175 260,182 C267,175 272,166 272,150" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                            <line x1="260" y1="182" x2="260" y2="205" stroke="currentColor" stroke-width="2.5"/>
+                            <ellipse cx="260" cy="208" rx="11" ry="2.8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                            <rect class="liquid-fill" x="248" width="24" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
                         </svg>
                         <div class="loading-text">Chargement du planning...</div>
                     </div>
@@ -1301,6 +1504,14 @@
             `;
             banner.appendChild(greeting);
             container.appendChild(banner);
+
+            const confirmedHtml = renderConfirmedSoireeCard();
+            if (confirmedHtml) {
+                const confirmedCard = document.createElement("div");
+                confirmedCard.className = "card next-available-card";
+                confirmedCard.innerHTML = confirmedHtml;
+                container.appendChild(confirmedCard);
+            }
 
             const overviewCard = document.createElement("div");
             overviewCard.className = "card";
@@ -1394,32 +1605,45 @@
         }
 
         function renderWeekendOverview(target) {
-            const weekend = getUpcomingWeekend();
+            const weekendDays = getUpcomingWeekend();
             target.innerHTML = "";
-            weekend.forEach(({ label, date }) => {
+            weekendDays.forEach(({ label, date }) => {
                 const match = planningData.find(item => {
                     const d = parseDate(item.date);
                     return d && d.getFullYear() === date.getFullYear()
                         && d.getMonth() === date.getMonth()
                         && d.getDate() === date.getDate();
                 });
-                let names = "Pas encore renseigné";
-                if (match) {
+
+                const isWknd = match ? isWeekendDay(match) : (date.getDay() === 0 || date.getDay() === 6);
+
+                let bodyHtml;
+                if (!match) {
+                    bodyHtml = `<div class="day-people">Pas encore renseigné</div>`;
+                } else if (isWknd) {
+                    const journeeNames = PEOPLE.filter(p => (match[p.key + "Journee"] || "").includes("Dispo")).map(p => p.display);
+                    const soireeNames = PEOPLE.filter(p => (match[p.key] || "").includes("Dispo")).map(p => p.display);
+                    bodyHtml = `
+                        <div class="day-people">☀️ Journée : ${journeeNames.length ? journeeNames.join(", ") : "Personne de dispo"}</div>
+                        <div class="day-people">🌙 Soirée : ${soireeNames.length ? soireeNames.join(", ") : "Personne de dispo"}</div>
+                    `;
+                } else {
                     const dispoNames = PEOPLE.filter(p => (match[p.key] || "").includes("Dispo")).map(p => p.display);
-                    names = dispoNames.length ? dispoNames.join(", ") : "Personne de dispo";
+                    bodyHtml = `<div class="day-people">Dispo : ${dispoNames.length ? dispoNames.join(", ") : "Personne de dispo"}</div>`;
                 }
+
                 const row = document.createElement("div");
                 row.className = "overview-row";
                 row.setAttribute("role", "button");
                 row.setAttribute("tabindex", "0");
-                row.setAttribute("aria-label", `${label} : Dispo ${names}`);
                 row.innerHTML = `
                     <div>
                         <div class="day-name">${label}</div>
-                        <div class="day-people">Dispo : ${names}</div>
+                        ${bodyHtml}
                     </div>
                     <span class="chevron" aria-hidden="true">›</span>
                 `;
+                row.setAttribute("aria-label", `${label} : ${row.textContent.trim()}`);
                 row.onclick = () => goToDate(match, label);
                 row.onkeydown = (e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -1446,6 +1670,27 @@
                     setTimeout(() => card.classList.remove("highlight-flash"), 1500);
                 }
             });
+        }
+
+        function renderConfirmedSoireeCard() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const upcoming = planningData
+                .map(item => ({ item, d: parseDate(item.date) }))
+                .filter(x => x.d && x.d >= today && x.item.confirmee)
+                .sort((a, b) => a.d - b.d);
+
+            if (upcoming.length === 0) return "";
+
+            const found = upcoming[0];
+            const isoDate = `${found.d.getFullYear()}-${String(found.d.getMonth() + 1).padStart(2, "0")}-${String(found.d.getDate()).padStart(2, "0")}`;
+
+            return `
+                <div class="label">${icon("wine")} Soirée confirmée</div>
+                <div class="value">${found.item.jour} ${found.item.date}</div>
+                <div style="margin-top:4px; opacity:0.8;">${found.item.confirmee}</div>
+                <button onclick="downloadEventICS('${isoDate}')" style="margin-top:12px;">${icon("calendar", 16)} Ajouter à mon agenda perso</button>
+            `;
         }
 
         function renderNextAvailable() {
@@ -1785,7 +2030,9 @@
                 calendar: `<rect x="4" y="5" width="16" height="15" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>`,
                 list: `<circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="12" x2="20" y2="12"/><circle cx="5" cy="18" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="18" x2="20" y2="18"/>`,
                 dice: `<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>`,
-                clock: `<circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 15 14"/>`
+                clock: `<circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 15 14"/>`,
+                sun: `<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>`,
+                wine: `<path d="M6 3h12c-0.5 5-2.5 9-6 9s-5.5-4-6-9Z"/><line x1="12" y1="12" x2="12" y2="19"/><line x1="8" y1="21" x2="16" y2="21"/>`
             };
             return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="vertical-align:-4px; margin-right:4px;" aria-hidden="true">${paths[name] || ""}</svg>`;
         }
@@ -1795,10 +2042,24 @@
             return person ? person.key : null;
         }
 
-        // Calcule le statut global à partir des 4 statuts (indépendant de la
+        // Un jour est "week-end" si c'est un Samedi ou un Dimanche
+        function isWeekendDay(item) {
+            const d = parseDate(item.date);
+            if (!d) return false;
+            const day = d.getDay();
+            return day === 0 || day === 6;
+        }
+
+        // Calcule le statut global à partir des statuts (indépendant de la
         // colonne "Analyse" du Sheet, pour garder la main sur le texte affiché).
+        // Le week-end, la Journée ET la Soirée comptent toutes les deux.
         function computeGlobalStatus(item) {
-            const statuses = PEOPLE.map(p => (item[p.key] || "").trim());
+            const weekend = isWeekendDay(item);
+            const statuses = [];
+            PEOPLE.forEach(p => {
+                statuses.push((item[p.key] || "").trim());
+                if (weekend) statuses.push((item[p.key + "Journee"] || "").trim());
+            });
             const hasIndispo = statuses.some(s => s !== "" && !s.includes("Dispo"));
             if (hasIndispo) {
                 return { text: "Pas toutes dispo", cls: "status-blocked" };
@@ -1814,21 +2075,29 @@
             return { text: "Tout le monde est libre !", cls: "status-free" };
         }
 
-        function buildCard(item, index) {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.dataset.row = item.sheetRow;
+        // Construit la rangée de pastilles pour un créneau donné ('evening' = soirée, 'day' = journée)
+        function buildParticipantsRow(item, index, slot) {
             const myKey = getCurrentPersonKey();
-            const globalStatus = computeGlobalStatus(item);
-            card.innerHTML = `
-                <div class="date-header">
-                    <span>${icon("moon")} Soirée du ${item.jour} ${item.date}</span>
-                    <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
-                </div>
+            const isConfirmedSlot = slot === "evening" && !!item.confirmee;
+            return `
                 <div class="participants-row">
                     ${PEOPLE.map(p => {
                         const isMine = p.key === myKey;
-                        const rawState = item[p.key] || "";
+                        const dataKey = slot === "day" ? (p.key + "Journee") : p.key;
+                        const rawState = item[dataKey] || "";
+
+                        if (isConfirmedSlot) {
+                            return `
+                            <div class="participant-badge">
+                                <span>${p.short}</span>
+                                <button class="round-btn state-confirmed"
+                                        disabled title="Soirée confirmée : ${item.confirmee}">
+                                    <span aria-hidden="true">${icon("wine", 16)}</span>
+                                </button>
+                            </div>
+                        `;
+                        }
+
                         const stateLabel = rawState.trim() === "" ? "pas encore répondu"
                             : rawState.includes("enfants") ? "disponible avec enfants"
                             : rawState.includes("Dispo") ? "disponible"
@@ -1836,17 +2105,56 @@
                         return `
                         <div class="participant-badge">
                             <span>${p.short}</span>
-                            <button class="round-btn ${getStateClass(item[p.key])}"
+                            <button class="round-btn ${getStateClass(rawState)}"
                                     aria-label="${p.display} : ${stateLabel}${isMine ? ', appuyer pour changer' : ''}"
                                     ${isMine
-                                        ? `onclick="changeStatus(${index}, '${p.key}')"`
+                                        ? `onclick="changeStatus(${index}, '${p.key}', '${slot}')"`
                                         : `disabled title="Seule ${p.display} peut modifier son statut"`}>
-                                <span aria-hidden="true">${getShortState(item[p.key])}</span>
+                                <span aria-hidden="true">${getShortState(rawState)}</span>
                             </button>
                         </div>
                     `;
                     }).join("")}
                 </div>
+            `;
+        }
+
+        function buildCard(item, index) {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.dataset.row = item.sheetRow;
+            const globalStatus = computeGlobalStatus(item);
+            const weekend = isWeekendDay(item);
+
+            const rowsHtml = weekend
+                ? `
+                    <div class="slot-label">${icon("sun", 14)} Journée</div>
+                    ${buildParticipantsRow(item, index, "day")}
+                    <div class="slot-label" style="margin-top:10px;">${icon("moon", 14)} Soirée</div>
+                    ${buildParticipantsRow(item, index, "evening")}
+                `
+                : buildParticipantsRow(item, index, "evening");
+
+            const confirmHtml = item.confirmee
+                ? `
+                    <div class="confirmed-banner">
+                        <span>${icon("wine", 14)} Confirmée : ${item.confirmee}</span>
+                        <button onclick="unconfirmSoiree(${index})">Annuler</button>
+                    </div>
+                `
+                : `
+                    <div class="confirm-btn-wrap">
+                        <button class="btn-orange" onclick="openConfirmModal(${index})">${icon("wine", 16)} Confirmer cette soirée</button>
+                    </div>
+                `;
+
+            card.innerHTML = `
+                <div class="date-header">
+                    <span>${icon("moon")} Soirée du ${item.jour} ${item.date}</span>
+                    <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
+                </div>
+                ${confirmHtml}
+                ${rowsHtml}
             `;
             return card;
         }
@@ -1890,7 +2198,7 @@
             return "Dispo - enfants";
         }
 
-        async function changeStatus(index, personKey) {
+        async function changeStatus(index, personKey, slot = "evening") {
             if (APPS_SCRIPT_URL.includes("COLLE_ICI")) {
                 showToast("L'URL de l'Apps Script n'a pas encore été configurée dans le code (APPS_SCRIPT_URL).", "error");
                 return;
@@ -1898,29 +2206,31 @@
 
             const item = planningData[index];
             const person = PEOPLE.find(p => p.key === personKey);
-            const oldVal = item[personKey];
+            const dataKey = slot === "day" ? (personKey + "Journee") : personKey;
+            const columnName = slot === "day" ? person.columnJournee : person.column;
+            const oldVal = item[dataKey];
             const newVal = nextStatus(oldVal);
 
             // Mise à jour optimiste de l'affichage
-            item[personKey] = newVal;
+            item[dataKey] = newVal;
             renderApp();
 
             try {
                 const url = `${APPS_SCRIPT_URL}?action=updateStatus`
                     + `&row=${item.sheetRow}`
-                    + `&personne=${encodeURIComponent(person.column)}`
+                    + `&personne=${encodeURIComponent(columnName)}`
                     + `&statut=${encodeURIComponent(newVal)}`;
                 const resp = await fetch(url);
                 const result = await resp.json();
 
                 if (!result.success) {
                     showToast("Erreur d'enregistrement : " + (result.error || "inconnue"), "error");
-                    item[personKey] = oldVal; // on annule le changement local
+                    item[dataKey] = oldVal; // on annule le changement local
                     renderApp();
                 }
             } catch (err) {
                 showToast("Erreur réseau : le statut n'a pas pu être sauvegardé. Nouvelle tentative au prochain chargement.", "error");
-                item[personKey] = oldVal;
+                item[dataKey] = oldVal;
                 renderApp();
             }
         }
@@ -1990,10 +2300,22 @@
                 cell.className = "calendar-day" + (matchIndex !== -1 ? " has-event" : "");
                 cell.innerHTML = `<span aria-hidden="true">${day}</span>`;
                 if (matchIndex !== -1) {
-                    cell.innerHTML += `<span class="dot" aria-hidden="true" style="background:${dotColorForItem(planningData[matchIndex])}"></span>`;
+                    const matchItem = planningData[matchIndex];
+                    if (isWeekendDay(matchItem)) {
+                        const journeeColor = dotColorForStatus_(computeSlotStatus(matchItem, "day").cls);
+                        const soireeColor = dotColorForStatus_(computeSlotStatus(matchItem, "evening").cls);
+                        cell.innerHTML += `
+                            <span class="dots-row" aria-hidden="true">
+                                <span class="dot" style="background:${journeeColor}"></span>
+                                <span class="dot" style="background:${soireeColor}"></span>
+                            </span>
+                        `;
+                    } else {
+                        cell.innerHTML += `<span class="dot" aria-hidden="true" style="background:${dotColorForItem(matchItem)}"></span>`;
+                    }
                     cell.setAttribute("role", "button");
                     cell.setAttribute("tabindex", "0");
-                    const statusText = computeGlobalStatus(planningData[matchIndex]).text;
+                    const statusText = computeGlobalStatus(matchItem).text;
                     cell.setAttribute("aria-label", `${day} ${monthNames[calMonth]} : ${statusText}`);
                     cell.onclick = () => showDayDetail(matchIndex);
                     cell.onkeydown = (e) => {
@@ -2011,13 +2333,30 @@
 
         function dotColorForItem(item) {
             const status = computeGlobalStatus(item);
+            return dotColorForStatus_(status.cls);
+        }
+
+        function dotColorForStatus_(cls) {
             const colors = {
                 "status-blocked": "#e24b4a",
                 "status-pending": "#b4b2a9",
                 "status-free-kids": "#378add",
                 "status-free": "#2ed573"
             };
-            return colors[status.cls] || "#b4b2a9";
+            return colors[cls] || "#b4b2a9";
+        }
+
+        // Statut d'un seul créneau (Journée ou Soirée), utilisé pour les 2
+        // points distincts du calendrier le week-end.
+        function computeSlotStatus(item, slot) {
+            const statuses = PEOPLE.map(p => (item[slot === "day" ? (p.key + "Journee") : p.key] || "").trim());
+            const hasIndispo = statuses.some(s => s !== "" && !s.includes("Dispo"));
+            if (hasIndispo) return { cls: "status-blocked" };
+            const hasPending = statuses.some(s => s === "");
+            if (hasPending) return { cls: "status-pending" };
+            const hasEnfants = statuses.some(s => s.includes("enfants") || s.includes("👶"));
+            if (hasEnfants) return { cls: "status-free-kids" };
+            return { cls: "status-free" };
         }
 
         function showDayDetail(index) {
