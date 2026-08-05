@@ -842,6 +842,21 @@
             text-align: center;
             margin-top: 12px;
         }
+        .btn-subtle {
+            background: transparent;
+            color: var(--text);
+            opacity: 0.6;
+            border: 1px dashed var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+        }
+        .btn-subtle:hover {
+            background: transparent;
+            color: var(--text);
+            border-color: var(--border);
+            opacity: 0.85;
+        }
 
         /* Titres : Fraunces (chaleureux + sérieux), reste en Inter */
         #login-screen h1,
@@ -2144,7 +2159,7 @@
                 `
                 : `
                     <div class="confirm-btn-wrap">
-                        <button class="btn-orange" onclick="openConfirmModal(${index})">${icon("wine", 16)} Confirmer cette soirée</button>
+                        <button class="btn-subtle" onclick="openConfirmModal(${index})">${icon("wine", 16)} Confirmer cette soirée</button>
                     </div>
                 `;
 
@@ -2153,8 +2168,9 @@
                     <span>${icon("moon")} Soirée du ${item.jour} ${item.date}</span>
                     <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
                 </div>
-                ${confirmHtml}
+                ${item.confirmee ? confirmHtml : ""}
                 ${rowsHtml}
+                ${item.confirmee ? "" : confirmHtml}
             `;
             return card;
         }
