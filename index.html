@@ -16,7 +16,7 @@
             --card-bg: #ffffff;
             --avatar-card-bg: #ffffff;
             --text: #080808;
-            --primary: #ff9142;
+            --primary: #ff5e3a;
             --primary-transparent: rgba(255, 94, 58, 0.82);
             --border: #dfe4ea;
             --shadow: rgba(0,0,0,0.05);
@@ -629,11 +629,11 @@
             padding: 70px 20px;
         }
         .pour-anim {
-            width: 150px;
-            height: 91px;
+            width: 225px;
+            height: 137px;
         }
         .pour-anim .bottle-group {
-            transform-origin: 143px 195px;
+            transform-origin: 125px 195px;
             animation: bottle-tilt 6.5s ease-in-out infinite;
         }
         @keyframes bottle-tilt {
@@ -1451,25 +1451,25 @@
                     <div class="loading-wrap" role="status" aria-live="polite">
                         <svg class="pour-anim" viewBox="0 0 380 230" aria-hidden="true" style="color: var(--primary);">
                             <clipPath id="pourGlassClip">
-                                <path d="M248,150 C248,166 253,175 260,182 C267,175 272,166 272,150 Z"/>
+                                <path d="M230,150 C230,166 235,175 242,182 C249,175 254,166 254,150 Z"/>
                             </clipPath>
                             <g class="bottle-group">
-                                <path d="M143,190 L143,135 C143,118 151,107 158,101 L158,70 L172,70 L172,101 C179,107 187,118 187,135 L187,188 C187,192 184,195 180,195 L148,195 C144,195 143,193 143,190 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                                <rect x="155" y="59" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                                <path d="M125,190 L125,135 C125,118 133,107 140,101 L140,70 L154,70 L154,101 C161,107 169,118 169,135 L169,188 C169,192 166,195 162,195 L130,195 C126,195 125,193 125,190 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                                <rect x="137" y="59" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/>
                             </g>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <circle class="droplet" cx="250" cy="105" r="2.5" fill="var(--primary)"/>
-                            <path d="M248,150 C248,166 253,175 260,182 C267,175 272,166 272,150" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                            <line x1="260" y1="182" x2="260" y2="205" stroke="currentColor" stroke-width="2.5"/>
-                            <ellipse cx="260" cy="208" rx="11" ry="2.8" fill="none" stroke="currentColor" stroke-width="2.5"/>
-                            <rect class="liquid-fill" x="248" width="24" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <circle class="droplet" cx="232" cy="105" r="2.5" fill="var(--primary)"/>
+                            <path d="M230,150 C230,166 235,175 242,182 C249,175 254,166 254,150" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                            <line x1="242" y1="182" x2="242" y2="205" stroke="currentColor" stroke-width="2.5"/>
+                            <ellipse cx="242" cy="208" rx="11" ry="2.8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                            <rect class="liquid-fill" x="230" width="24" fill="var(--primary)" clip-path="url(#pourGlassClip)"/>
                         </svg>
                         <div class="loading-text">Chargement du planning...</div>
                     </div>
@@ -2360,4 +2360,4 @@
                 });
 
                 const cell = document.createElement("div");
-                cell.className = "calendar-day" + (ma
+                cell.className = "calendar-day" + (m
