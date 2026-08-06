@@ -808,9 +808,15 @@
 
         /* Statut "soirée confirmée" */
         .state-confirmed {
-            background: #378add;
+            background: #1d6fb0;
             color: #fff;
             cursor: default;
+        }
+        .state-confirmed svg {
+            display: block !important;
+            margin: 0 !important;
+            vertical-align: initial !important;
+            stroke-width: 2.2;
         }
         .confirmed-banner {
             background: #e6f1fb;
@@ -992,9 +998,9 @@
     <div id="confirm-modal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
         <div class="confirm-title" id="confirm-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" style="vertical-align:-4px; margin-right:4px;" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>
-            Confirmer cette soirée
+            <span id="confirm-title-text">Confirmer cette soirée</span>
         </div>
-        <label for="confirm-input" class="sr-only">Motif de la soirée</label>
+        <label for="confirm-input" class="sr-only">Motif</label>
         <input type="text" id="confirm-input" placeholder="Ex : anniversaire, juste pour se voir..." maxlength="60" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); submitConfirm();}">
         <div class="confirm-actions">
             <button onclick="closeConfirmModal()">Annuler</button>
@@ -1221,14 +1227,17 @@
         }
 
         // ==========================================================
-        // SOIRÉE CONFIRMÉE
+        // SOIRÉE / JOURNÉE CONFIRMÉE
         // ==========================================================
         let pendingConfirmIndex = null;
+        let pendingConfirmSlot = "evening";
         let confirmTriggerEl = null;
 
-        function openConfirmModal(index) {
+        function openConfirmModal(index, slot = "evening") {
             pendingConfirmIndex = index;
+            pendingConfirmSlot = slot;
             confirmTriggerEl = document.activeElement;
+            document.getElementById("confirm-title-text").textContent = slot === "day" ? "Confirmer cette journée" : "Confirmer cette soirée";
             document.getElementById("confirm-input").value = "";
             document.getElementById("confirm-overlay").classList.add("open");
             document.getElementById("confirm-modal").classList.add("open");
@@ -1248,27 +1257,34 @@
             if (pendingConfirmIndex === null) return;
             const motif = document.getElementById("confirm-input").value.trim();
             if (!motif) {
-                showToast("Ajoute un petit motif pour la soirée.", "warn");
+                showToast("Ajoute un petit motif.", "warn");
                 return;
             }
             const index = pendingConfirmIndex;
+            const slot = pendingConfirmSlot;
             closeConfirmModal();
-            await sendConfirmSoiree_(index, motif);
+            await sendConfirmSlot_(index, slot, motif);
         }
 
         async function unconfirmSoiree(index) {
-            await sendConfirmSoiree_(index, "");
+            await sendConfirmSlot_(index, "evening", "");
         }
 
-        async function sendConfirmSoiree_(index, motif) {
+        async function unconfirmJournee(index) {
+            await sendConfirmSlot_(index, "day", "");
+        }
+
+        async function sendConfirmSlot_(index, slot, motif) {
             const item = planningData[index];
-            // On efface d'abord toute autre soirée confirmée localement (une seule à la fois)
-            planningData.forEach(p => { p.confirmee = ""; });
-            item.confirmee = motif;
+            const field = slot === "day" ? "confirmeeJournee" : "confirmee";
+            // On efface d'abord toute autre confirmation locale sur ce même créneau (une seule à la fois)
+            planningData.forEach(p => { p[field] = ""; });
+            item[field] = motif;
             renderApp();
 
             try {
-                const action = motif ? "confirmSoiree" : "unconfirmSoiree";
+                const baseAction = slot === "day" ? "Journee" : "Soiree";
+                const action = (motif ? "confirm" : "unconfirm") + baseAction;
                 const url = `${APPS_SCRIPT_URL}?action=${action}&row=${item.sheetRow}&motif=${encodeURIComponent(motif)}`;
                 const resp = await fetch(url);
                 const result = await resp.json();
@@ -1276,7 +1292,7 @@
                     showToast("Erreur : " + (result.error || "inconnue"), "error");
                     await loadPlanning();
                 } else if (motif) {
-                    showToast("Soirée confirmée !");
+                    showToast(slot === "day" ? "Journée confirmée !" : "Soirée confirmée !");
                 }
             } catch (err) {
                 showToast("Erreur réseau, réessaie plus tard.", "error");
@@ -1520,12 +1536,20 @@
             banner.appendChild(greeting);
             container.appendChild(banner);
 
-            const confirmedHtml = renderConfirmedSoireeCard();
+            const confirmedHtml = renderConfirmedSlotCard("evening");
             if (confirmedHtml) {
                 const confirmedCard = document.createElement("div");
                 confirmedCard.className = "card next-available-card";
                 confirmedCard.innerHTML = confirmedHtml;
                 container.appendChild(confirmedCard);
+            }
+
+            const confirmedJourneeHtml = renderConfirmedSlotCard("day");
+            if (confirmedJourneeHtml) {
+                const confirmedJourneeCard = document.createElement("div");
+                confirmedJourneeCard.className = "card next-available-card";
+                confirmedJourneeCard.innerHTML = confirmedJourneeHtml;
+                container.appendChild(confirmedJourneeCard);
             }
 
             const overviewCard = document.createElement("div");
@@ -1687,12 +1711,14 @@
             });
         }
 
-        function renderConfirmedSoireeCard() {
+        function renderConfirmedSlotCard(slot) {
+            const field = slot === "day" ? "confirmeeJournee" : "confirmee";
+            const label = slot === "day" ? "Journée confirmée" : "Soirée confirmée";
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const upcoming = planningData
                 .map(item => ({ item, d: parseDate(item.date) }))
-                .filter(x => x.d && x.d >= today && x.item.confirmee)
+                .filter(x => x.d && x.d >= today && x.item[field])
                 .sort((a, b) => a.d - b.d);
 
             if (upcoming.length === 0) return "";
@@ -1701,10 +1727,10 @@
             const isoDate = `${found.d.getFullYear()}-${String(found.d.getMonth() + 1).padStart(2, "0")}-${String(found.d.getDate()).padStart(2, "0")}`;
 
             return `
-                <div class="label">${icon("wine")} Soirée confirmée</div>
+                <div class="label">${icon("wine")} ${label}</div>
                 <div class="value">${found.item.jour} ${found.item.date}</div>
-                <div style="margin-top:4px; opacity:0.8;">${found.item.confirmee}</div>
-                <button onclick="downloadEventICS('${isoDate}')" style="margin-top:12px;">${icon("calendar", 16)} Ajouter à mon agenda perso</button>
+                <div style="margin-top:4px; opacity:0.8;">${found.item[field]}</div>
+                <button onclick="downloadEventICS('${isoDate}', '${slot}')" style="margin-top:12px;">${icon("calendar", 16)} Ajouter à mon agenda perso</button>
             `;
         }
 
@@ -1733,24 +1759,26 @@
         }
 
         // Génère et télécharge un fichier .ics pour ajouter la soirée à un agenda perso
-        function downloadEventICS(isoDateStr) {
+        function downloadEventICS(isoDateStr, slot = "evening") {
             const [y, m, d] = isoDateStr.split("-").map(Number);
             const pad = (n) => String(n).padStart(2, "0");
-            const dtStart = `${y}${pad(m)}${pad(d)}T200000`;
-            const dtEnd = `${y}${pad(m)}${pad(d)}T230000`;
+            const heures = slot === "day" ? ["100000", "180000"] : ["200000", "230000"];
+            const dtStart = `${y}${pad(m)}${pad(d)}T${heures[0]}`;
+            const dtEnd = `${y}${pad(m)}${pad(d)}T${heures[1]}`;
             const dtStamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+            const titre = slot === "day" ? "☀️ Journée QG des Daronnes" : "🍷 Soirée QG des Daronnes";
 
             const ics = [
                 "BEGIN:VCALENDAR",
                 "VERSION:2.0",
                 "PRODID:-//QG des Daronnes//FR",
                 "BEGIN:VEVENT",
-                `UID:qgd-${isoDateStr}@qgdaronnes`,
+                `UID:qgd-${slot}-${isoDateStr}@qgdaronnes`,
                 `DTSTAMP:${dtStamp}`,
                 `DTSTART:${dtStart}`,
                 `DTEND:${dtEnd}`,
-                "SUMMARY:🍷 Soirée QG des Daronnes",
-                "DESCRIPTION:Soirée entre daronnes",
+                `SUMMARY:${titre}`,
+                "DESCRIPTION:Moment entre daronnes",
                 "END:VEVENT",
                 "END:VCALENDAR"
             ].join("\r\n");
@@ -2093,7 +2121,9 @@
         // Construit la rangée de pastilles pour un créneau donné ('evening' = soirée, 'day' = journée)
         function buildParticipantsRow(item, index, slot) {
             const myKey = getCurrentPersonKey();
-            const isConfirmedSlot = slot === "evening" && !!item.confirmee;
+            const confirmField = slot === "day" ? "confirmeeJournee" : "confirmee";
+            const isConfirmedSlot = !!item[confirmField];
+            const slotLabel = slot === "day" ? "journée" : "soirée";
             return `
                 <div class="participants-row">
                     ${PEOPLE.map(p => {
@@ -2105,10 +2135,9 @@
                             return `
                             <div class="participant-badge">
                                 <span>${p.short}</span>
-                                <button class="round-btn state-confirmed"
-                                        disabled title="Soirée confirmée : ${item.confirmee}">
-                                    <span aria-hidden="true">${icon("wine", 16)}</span>
-                                </button>
+                                <div class="round-btn state-confirmed" role="img" aria-label="${p.display} : ${slotLabel} confirmée, ${item[confirmField]}">
+                                    ${icon("wine", 16)}
+                                </div>
                             </div>
                         `;
                         }
@@ -2134,6 +2163,27 @@
             `;
         }
 
+        // Bloc "Confirmer cette soirée/journée" (bouton discret) ou bannière si déjà confirmé
+        function buildConfirmBlock(item, index, slot) {
+            const confirmField = slot === "day" ? "confirmeeJournee" : "confirmee";
+            const label = slot === "day" ? "journée" : "soirée";
+            const unconfirmFn = slot === "day" ? "unconfirmJournee" : "unconfirmSoiree";
+
+            if (item[confirmField]) {
+                return `
+                    <div class="confirmed-banner">
+                        <span>${icon("wine", 14)} Confirmée : ${item[confirmField]}</span>
+                        <button onclick="${unconfirmFn}(${index})">Annuler</button>
+                    </div>
+                `;
+            }
+            return `
+                <div class="confirm-btn-wrap">
+                    <button class="btn-subtle" onclick="openConfirmModal(${index}, '${slot}')">${icon("wine", 16)} Confirmer cette ${label}</button>
+                </div>
+            `;
+        }
+
         function buildCard(item, index) {
             const card = document.createElement("div");
             card.className = "card";
@@ -2145,32 +2195,22 @@
                 ? `
                     <div class="slot-label">${icon("sun", 14)} Journée</div>
                     ${buildParticipantsRow(item, index, "day")}
+                    ${buildConfirmBlock(item, index, "day")}
                     <div class="slot-label" style="margin-top:10px;">${icon("moon", 14)} Soirée</div>
                     ${buildParticipantsRow(item, index, "evening")}
-                `
-                : buildParticipantsRow(item, index, "evening");
-
-            const confirmHtml = item.confirmee
-                ? `
-                    <div class="confirmed-banner">
-                        <span>${icon("wine", 14)} Confirmée : ${item.confirmee}</span>
-                        <button onclick="unconfirmSoiree(${index})">Annuler</button>
-                    </div>
+                    ${buildConfirmBlock(item, index, "evening")}
                 `
                 : `
-                    <div class="confirm-btn-wrap">
-                        <button class="btn-subtle" onclick="openConfirmModal(${index})">${icon("wine", 16)} Confirmer cette soirée</button>
-                    </div>
+                    ${buildParticipantsRow(item, index, "evening")}
+                    ${buildConfirmBlock(item, index, "evening")}
                 `;
 
             card.innerHTML = `
                 <div class="date-header">
-                    <span>${icon("moon")} Soirée du ${item.jour} ${item.date}</span>
+                    <span>${icon("moon")} ${item.jour} ${item.date}</span>
                     <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
                 </div>
-                ${item.confirmee ? confirmHtml : ""}
                 ${rowsHtml}
-                ${item.confirmee ? "" : confirmHtml}
             `;
             return card;
         }
