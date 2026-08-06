@@ -6,7 +6,7 @@
     <title>Le QG des Daronnes</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff5e3a">
-    <link rel="apple-touch-icon" href="logo-qgd.png">
+    <link rel="apple-touch-icon" href="logo-qgd.png?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -2214,7 +2214,7 @@
 
             card.innerHTML = `
                 <div class="date-header">
-                    <span>${icon("moon")} ${item.jour} ${item.date}</span>
+                    <span>${item.jour} ${item.date}</span>
                     <span class="status-global ${globalStatus.cls}">${globalStatus.text}</span>
                 </div>
                 ${rowsHtml}
@@ -2360,129 +2360,4 @@
                 });
 
                 const cell = document.createElement("div");
-                cell.className = "calendar-day" + (matchIndex !== -1 ? " has-event" : "");
-                cell.innerHTML = `<span aria-hidden="true">${day}</span>`;
-                if (matchIndex !== -1) {
-                    const matchItem = planningData[matchIndex];
-                    if (isWeekendDay(matchItem)) {
-                        const journeeColor = dotColorForStatus_(computeSlotStatus(matchItem, "day").cls);
-                        const soireeColor = dotColorForStatus_(computeSlotStatus(matchItem, "evening").cls);
-                        cell.innerHTML += `
-                            <span class="dots-row" aria-hidden="true">
-                                <span class="dot" style="background:${journeeColor}"></span>
-                                <span class="dot" style="background:${soireeColor}"></span>
-                            </span>
-                        `;
-                    } else {
-                        cell.innerHTML += `<span class="dot" aria-hidden="true" style="background:${dotColorForItem(matchItem)}"></span>`;
-                    }
-                    cell.setAttribute("role", "button");
-                    cell.setAttribute("tabindex", "0");
-                    const statusText = computeGlobalStatus(matchItem).text;
-                    cell.setAttribute("aria-label", `${day} ${monthNames[calMonth]} : ${statusText}`);
-                    cell.onclick = () => showDayDetail(matchIndex);
-                    cell.onkeydown = (e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            showDayDetail(matchIndex);
-                        }
-                    };
-                } else {
-                    cell.setAttribute("aria-hidden", "true");
-                }
-                grid.appendChild(cell);
-            }
-        }
-
-        function dotColorForItem(item) {
-            const status = computeGlobalStatus(item);
-            return dotColorForStatus_(status.cls);
-        }
-
-        function dotColorForStatus_(cls) {
-            const colors = {
-                "status-blocked": "#e24b4a",
-                "status-pending": "#b4b2a9",
-                "status-free-kids": "#378add",
-                "status-free": "#2ed573"
-            };
-            return colors[cls] || "#b4b2a9";
-        }
-
-        // Statut d'un seul créneau (Journée ou Soirée), utilisé pour les 2
-        // points distincts du calendrier le week-end.
-        function computeSlotStatus(item, slot) {
-            const statuses = PEOPLE.map(p => (item[slot === "day" ? (p.key + "Journee") : p.key] || "").trim());
-            const hasIndispo = statuses.some(s => s !== "" && !s.includes("Dispo"));
-            if (hasIndispo) return { cls: "status-blocked" };
-            const hasPending = statuses.some(s => s === "");
-            if (hasPending) return { cls: "status-pending" };
-            const hasEnfants = statuses.some(s => s.includes("enfants") || s.includes("👶"));
-            if (hasEnfants) return { cls: "status-free-kids" };
-            return { cls: "status-free" };
-        }
-
-        function showDayDetail(index) {
-            const detail = document.getElementById("calendar-day-detail");
-            detail.innerHTML = "";
-            detail.appendChild(buildCard(planningData[index], index));
-        }
-
-        function changeMonth(delta) {
-            calMonth += delta;
-            if (calMonth < 0) { calMonth = 11; calYear--; }
-            if (calMonth > 11) { calMonth = 0; calYear++; }
-            renderApp();
-        }
-
-        // ==========================================================
-        // BOUTON REMONTER EN HAUT
-        // ==========================================================
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        window.addEventListener("scroll", () => {
-            const btn = document.getElementById("scroll-top-btn");
-            if (!btn) return;
-            btn.style.display = window.scrollY > 300 ? "flex" : "none";
-        });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key !== "Escape") return;
-            if (document.getElementById("pin-modal").classList.contains("open")) {
-                closePinModal();
-            } else if (document.getElementById("menu-drawer").classList.contains("open")) {
-                closeMenu();
-            }
-        });
-
-        // ==========================================================
-        // PWA : enregistrement du service worker
-        // ==========================================================
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("sw.js").catch(() => {
-                    // Pas grave si ça échoue (ex: ouverture en local sans serveur) :
-                    // l'app fonctionne quand même normalement.
-                });
-            });
-        }
-
-        // ==========================================================
-        // INITIALISATION
-        // ==========================================================
-        buildLoginScreen();
-
-        (function restoreSession() {
-            try {
-                const savedUser = localStorage.getItem(SESSION_KEY);
-                if (savedUser && PEOPLE.some(p => p.display === savedUser)) {
-                    login(savedUser);
-                }
-            } catch (e) {
-                // Pas de session à restaurer, on reste sur l'écran de connexion.
-            }
-        })();
-    </script>
-</body>
-</html>
+                cell.className = "calendar-day" + (ma
