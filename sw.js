@@ -4,11 +4,11 @@
 // hors-ligne). Les données du planning passent par Apps Script et gèrent
 // déjà leur propre repli via localStorage dans l'app elle-même.
 
-const CACHE_NAME = "qgd-shell-v2";
+const CACHE_NAME = "qgd-shell-v3";
 const SHELL_FILES = [
   "./",
   "./index.html",
-  "./logo-qgd.png",
+  "./logo-qgd.png?v=2",
   "./manifest.json"
 ];
 
